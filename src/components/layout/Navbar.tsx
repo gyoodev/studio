@@ -5,17 +5,18 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation'; // Added usePathname
 import { FlexAIFitLogo } from '@/components/icons/FlexAIFitLogo';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from '@/components/ui/sheet';
-import { Menu, LogOut, UserCircle, LogIn, UserPlus } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from '@/components/ui/sheet'; // SheetTitle added
+import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign } from 'lucide-react'; // Added DollarSign
 import { useAuth } from '@/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from '@/lib/utils'; // Added cn
+import { cn } from '@/lib/utils';
 
 const baseNavItems = [
   { href: '/generate-plan', label: 'Generate Plan' },
   { href: '/adapt-plan', label: 'Adapt Plan' },
   { href: '/form-check', label: 'Form Check' },
   { href: '/challenges', label: 'Challenges' },
+  { href: '/pricing', label: 'Pricing', icon: DollarSign }, // Added Pricing
 ];
 
 export function Navbar() {
@@ -42,18 +43,19 @@ export function Navbar() {
         </Link>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex flex-1 items-center space-x-4 text-sm font-medium">
+        <nav className="hidden md:flex flex-1 items-center space-x-4 lg:space-x-6 text-sm font-medium">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
               className={cn(
-                "transition-colors",
+                "transition-colors flex items-center gap-1.5", // Added flex and gap for icon
                 pathname === item.href
                   ? "text-primary font-semibold"
                   : "text-muted-foreground hover:text-primary"
               )}
             >
+              {item.icon && <item.icon className="h-4 w-4" />}
               {item.label}
             </Link>
           ))}
@@ -105,7 +107,8 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] flex flex-col">
-              <SheetTitle className="sr-only">Navigation Menu</SheetTitle> 
+              {/* Added SheetTitle for accessibility as per Radix UI recommendation */}
+              <SheetTitle className="sr-only">Main Menu</SheetTitle> 
               
               <nav className="flex flex-col space-y-3 mt-8 flex-grow">
                 <Link href="/" className="mb-4">
@@ -118,12 +121,13 @@ export function Navbar() {
                     <Link
                       href={item.href}
                       className={cn(
-                        "rounded-md p-2 text-base font-medium transition-colors",
+                        "rounded-md p-2 text-base font-medium transition-colors flex items-center gap-2", // Added flex and gap
                         pathname === item.href
                           ? "bg-primary text-primary-foreground"
                           : "hover:bg-accent hover:text-accent-foreground"
                       )}
                     >
+                      {item.icon && <item.icon className="h-5 w-5" />}
                       {item.label}
                     </Link>
                   </SheetClose>

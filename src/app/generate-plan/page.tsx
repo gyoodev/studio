@@ -9,7 +9,6 @@ import { generateWorkoutPlan, type GenerateWorkoutPlanInput, type GenerateWorkou
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-// import { Input } from '@/components/ui/input'; // No longer using Input
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -42,18 +41,18 @@ export default function GeneratePlanPage() {
     },
   });
 
-  // Reset form if user logs out/changes or on initial load if not logged in
   useEffect(() => {
-    if (!authLoading && !user) {
-      form.reset();
-      setWorkoutPlan(null);
-    }
-  }, [user, authLoading, form]);
+    // Form reset is handled by AuthGuard if user is not present.
+    // If user changes, we might want to clear old plans, but it's not strictly necessary
+    // as a new generation will replace it.
+    setWorkoutPlan(null); 
+  }, [user]);
 
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    if (!user) { // Should not happen due to AuthGuard, but good as a fallback
-      toast({
+    // AuthGuard ensures user is present here.
+    if (!user) {
+      toast({ // Fallback, should be handled by AuthGuard
         title: "Authentication Required",
         description: "Please log in to generate a workout plan.",
         variant: "destructive",
@@ -88,37 +87,6 @@ export default function GeneratePlanPage() {
     setIsLoading(false);
   };
   
-  // AuthGuard will handle displaying a loader or redirecting to login if user/authLoading state is not ready
-  // This explicit loading check is mostly for initial render before AuthGuard kicks in fully or if AuthGuard logic changes.
-  if (authLoading && !user) {
-     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // AuthGuard handles the redirection, but we can show a specific message if preferred.
-  // However, AuthGuard usually redirects before this point.
-  // This is more of a conceptual placeholder if AuthGuard wasn't used.
-  if (!user && !authLoading) {
-     return (
-        <div className="container py-12 text-center">
-            <Card className="max-w-md mx-auto">
-                <CardHeader>
-                    <CardTitle>Access Denied</CardTitle>
-                    <CardDescription>You need to be logged in to generate a workout plan.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button asChild>
-                        <Link href="/login?redirect=/generate-plan">Log In to Continue</Link>
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
-    );
-  }
-
   return (
     <AuthGuard>
       <div className="container py-12">
@@ -128,7 +96,7 @@ export default function GeneratePlanPage() {
               <Bot className="h-8 w-8 text-primary" />
               <CardTitle className="text-3xl font-bold">Generate Your Workout Plan</CardTitle>
             </div>
-            <CardDescription>Fill in your details below, and our AI will create a personalized workout plan for you.</CardDescription>
+            <CardDescription>Fill in your details below, and our AI will create a personalized workout plan for you. Paid users receive more detailed plans!</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -210,7 +178,10 @@ export default function GeneratePlanPage() {
             <CardFooter>
               <p className="text-xs text-muted-foreground">
                 This plan is AI-generated. Consult with a professional before starting any new workout routine.
-                {(user && user.subscriptionPlan === 'free') && " Upgrade to a paid plan for more detailed and comprehensive workout plans!"}
+                {(user && user.subscriptionPlan === 'free' && user.subscriptionStatus === 'active') && 
+                " This is a basic plan. Upgrade to a paid subscription for more comprehensive and detailed workout plans!"}
+                 {(user && user.subscriptionPlan !== 'free' && user.subscriptionStatus === 'active') && 
+                " You're receiving an enhanced plan thanks to your subscription!"}
               </p>
             </CardFooter>
           </Card>

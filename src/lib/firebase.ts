@@ -31,18 +31,18 @@ if (!firebaseConfig.apiKey) {
   } catch (error) {
     console.error('Failed to initialize Firebase app. Check your firebaseConfig and .env.local file:', error);
     // @ts-ignore
-    app = undefined; 
+    app = undefined;
   }
 } else {
   app = getApps()[0];
 }
 
 // Initialize Auth, Firestore, and Analytics only if app was successfully initialized
-if (app!) { 
+if (app!) {
   auth = getAuth(app);
   db = getFirestore(app);
 
-  if (typeof window !== 'undefined') { 
+  if (typeof window !== 'undefined') {
     enableIndexedDbPersistence(db)
       .then(() => {
         // console.log("Firestore offline persistence enabled successfully.");
@@ -64,15 +64,15 @@ if (app!) {
         console.error("Failed to initialize Firebase Analytics:", error);
       }
     } else {
-      // console.warn("Firebase Measurement ID is not set. Analytics will not be initialized.");
+      console.warn("Firebase Measurement ID is not set. Analytics (telemetry) will not be initialized. Please set NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID in your .env.local file.");
     }
   }
 } else {
-  if (firebaseConfig.apiKey) { // Only log this if an API key was provided but init still failed
+  if (firebaseConfig.apiKey) { 
     console.error("Firebase app is not initialized despite API key being present. Auth, Firestore, and Analytics will not be available.");
   }
   // @ts-ignore
-  auth = undefined; 
+  auth = undefined;
   // @ts-ignore
   db = undefined;
   analytics = undefined;

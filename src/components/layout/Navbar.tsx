@@ -2,10 +2,10 @@
 "use client"; // Required for useAuth hook and Sheet interactions
 
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation'; // Added usePathname
-import { FlexFitAILogo } from '@/components/icons/FlexFitAILogo'; // Updated import
+import { useRouter, usePathname } from 'next/navigation';
+import { FlexFitAILogo } from '@/components/icons/FlexFitAILogo';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from '@/components/ui/sheet'; // SheetTitle added
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose, SheetHeader } from '@/components/ui/sheet'; // SheetHeader added
 import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign } from 'lucide-react'; // Added DollarSign
 import { useAuth } from '@/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,137 +16,97 @@ const baseNavItems = [
   { href: '/adapt-plan', label: 'Adapt Plan' },
   { href: '/form-check', label: 'Form Check' },
   { href: '/challenges', label: 'Challenges' },
-  { href: '/pricing', label: 'Pricing', icon: DollarSign }, // Added Pricing
+  { href: '/pricing', label: 'Pricing', icon: DollarSign },
 ];
 
 export function Navbar() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
-  const pathname = usePathname(); // Get current pathname
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await logout();
-    router.push('/'); // Redirect to home after logout
+    router.push('/');
   };
   
   const userInitial = user?.displayName ? user.displayName.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : '');
 
   const navItems = user 
-    ? [...baseNavItems, { href: '/profile', label: 'Profile' }]
+    ? [...baseNavItems, { href: '/profile', label: 'Profile', icon: UserCircle }]
     : baseNavItems;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <FlexFitAILogo className="h-8 w-auto" /> {/* Updated usage */}
-        </Link>
-        
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex flex-1 items-center space-x-4 lg:space-x-6 text-sm font-medium">
-          {navItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={cn(
-                "transition-colors flex items-center gap-1.5", // Added flex and gap for icon
-                pathname === item.href
-                  ? "text-primary font-semibold"
-                  : "text-muted-foreground hover:text-primary"
-              )}
-            >
-              {item.icon && <item.icon className="h-4 w-4" />}
-              {item.label}
+      <div className="container flex h-16 items-center justify-between relative">
+        {/* Left Side: Plans Icon Button */}
+        <div className="flex items-center">
+          <Button variant="ghost" size="icon" asChild aria-label="View Pricing Plans">
+            <Link href="/pricing">
+              <DollarSign className="h-6 w-6" />
             </Link>
-          ))}
-        </nav>
-
-        {/* Desktop Auth Buttons / User Info */}
-        <div className="hidden md:flex items-center space-x-3 ml-auto">
-          {loading ? (
-            <div className="h-8 w-20 animate-pulse bg-muted rounded-md" /> // Skeleton for loading state
-          ) : user ? (
-            <>
-              <Button variant="ghost" asChild className="p-0 h-auto">
-                 <Link href="/profile" className="flex items-center space-x-2">
-                    <Avatar className="h-8 w-8 text-xs">
-                      <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || ""} data-ai-hint="profile avatar" />
-                      <AvatarFallback>{userInitial}</AvatarFallback>
-                    </Avatar>
-                    <span>{user.displayName || user.email?.split('@')[0]}</span>
-                  </Link>
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="shadow-sm">
-                <LogOut className="mr-1.5 h-4 w-4" />
-                Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/login">
-                  <LogIn className="mr-1.5 h-4 w-4" /> Log In
-                </Link>
-              </Button>
-              <Button size="sm" asChild className="shadow-sm">
-                <Link href="/signup">
-                  <UserPlus className="mr-1.5 h-4 w-4" /> Sign Up
-                </Link>
-              </Button>
-            </>
-          )}
+          </Button>
         </div>
 
-        {/* Mobile Navigation Trigger */}
-        <div className="flex flex-1 items-center justify-end space-x-4 md:hidden">
+        {/* Center: Logo */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Link href="/" aria-label="FlexFit AI Homepage">
+            <FlexFitAILogo className="h-8 w-auto" />
+          </Link>
+        </div>
+
+        {/* Right Side: Navigation Sheet Trigger */}
+        <div className="flex items-center">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Open Navigation Menu">
                 <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] flex flex-col">
-              <SheetTitle className="sr-only">Main Menu</SheetTitle> 
+            <SheetContent side="right" className="w-[300px] sm:w-[320px] flex flex-col p-0">
+              <SheetHeader className="p-4 border-b">
+                <SheetTitle> {/* Added SheetTitle for accessibility */}
+                  <SheetClose asChild>
+                    <Link href="/" className="flex items-center space-x-2">
+                       <FlexFitAILogo className="h-7 w-auto" />
+                    </Link>
+                  </SheetClose>
+                  <span className="sr-only">Main Menu</span> {/* For screen readers, as title is now the logo */}
+                </SheetTitle>
+              </SheetHeader>
               
-              <nav className="flex flex-col space-y-3 mt-8 flex-grow">
-                <SheetClose asChild>
-                  <Link href="/" className="mb-4 flex items-center space-x-2">
-                    <FlexFitAILogo className="h-8 w-auto" />
-                  </Link>
-                </SheetClose>
+              <nav className="flex flex-col space-y-1 p-4 flex-grow overflow-y-auto">
                 {navItems.map((item) => (
                    <SheetClose asChild key={item.label}>
                     <Link
                       href={item.href}
                       className={cn(
-                        "rounded-md p-2 text-base font-medium transition-colors flex items-center gap-2", // Added flex and gap
+                        "rounded-md p-3 text-base font-medium transition-colors flex items-center gap-3 hover:bg-muted",
                         pathname === item.href
-                          ? "bg-primary text-primary-foreground"
-                          : "hover:bg-accent hover:text-accent-foreground"
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                          : "text-foreground hover:text-accent-foreground"
                       )}
                     >
                       {item.icon && <item.icon className="h-5 w-5" />}
-                      {item.label}
+                      <span>{item.label}</span>
                     </Link>
                   </SheetClose>
                 ))}
               </nav>
 
               {/* Mobile Auth Buttons / User Info */}
-              <div className="mt-auto border-t pt-4">
+              <div className="mt-auto border-t p-4 space-y-3">
                 {loading ? (
                   <div className="h-10 w-full animate-pulse bg-muted rounded-md mb-2" />
                 ) : user ? (
-                  <div className="space-y-3">
+                  <>
                      <SheetClose asChild>
-                      <Button variant="ghost" asChild className="w-full justify-start p-2 text-base">
+                      <Button variant="ghost" asChild className="w-full justify-start p-2 text-base rounded-md hover:bg-muted">
                         <Link href="/profile" className="flex items-center space-x-2">
-                          <Avatar className="h-8 w-8 text-xs">
-                            <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || ""} />
+                          <Avatar className="h-9 w-9 text-sm">
+                            <AvatarImage src={user.photoURL || undefined} alt={user.displayName || user.email || ""} data-ai-hint="profile avatar" />
                             <AvatarFallback>{userInitial}</AvatarFallback>
                           </Avatar>
-                          <span>{user.displayName || user.email?.split('@')[0]}</span>
+                          <span className="truncate">{user.displayName || user.email?.split('@')[0]}</span>
                         </Link>
                       </Button>
                     </SheetClose>
@@ -155,9 +115,9 @@ export function Navbar() {
                         <LogOut className="mr-2 h-4 w-4" /> Logout
                       </Button>
                     </SheetClose>
-                  </div>
+                  </>
                 ) : (
-                  <div className="space-y-3">
+                  <>
                     <SheetClose asChild>
                       <Button variant="outline" asChild className="w-full">
                         <Link href="/login">
@@ -172,7 +132,7 @@ export function Navbar() {
                         </Link>
                       </Button>
                     </SheetClose>
-                  </div>
+                  </>
                 )}
               </div>
             </SheetContent>

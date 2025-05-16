@@ -32,7 +32,7 @@
     --input: 240 5.9% 88%;
     --ring: 207 90% 61%; /* Primary color for ring */
 
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* Updated from 0.5rem */
 
     /* Sidebar specific colors */
     --sidebar-background: 0 0% 100%; /* White sidebar */
@@ -73,6 +73,7 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 207 90% 61%;
+    /* --radius for .dark is inherited from :root, no need to redefine unless different for dark mode */
 
     /* Dark Sidebar specific colors */
     --sidebar-background: 240 5.9% 10%; 

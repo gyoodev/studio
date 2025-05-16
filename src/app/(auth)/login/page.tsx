@@ -13,7 +13,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, LogIn, AlertCircle } from 'lucide-react'; // Added AlertCircle for error emphasis
+import { Loader2, LogIn, AlertCircle, Chrome } from 'lucide-react'; 
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address. Please enter a valid email.").min(1, "Email is required."),
@@ -24,7 +25,8 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { signInWithEmail, error: authError } = useAuth(); // Renamed context error
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { signInWithEmail, signInWithGoogle, error: authError } = useAuth(); 
   const router = useRouter();
   const { toast } = useToast();
 
@@ -45,11 +47,31 @@ export default function LoginPage() {
         title: "Login Successful",
         description: `Welcome back, ${user.displayName || user.email}!`,
       });
-      router.push('/'); // Redirect to homepage or dashboard
+      router.push('/'); 
     } else {
+      // authError from context will be displayed below the form
       toast({
         title: "Login Failed",
         description: authError || "Please check your credentials and try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    const user = await signInWithGoogle();
+    setIsGoogleLoading(false);
+    if (user) {
+      toast({
+        title: "Google Sign-In Successful",
+        description: `Welcome, ${user.displayName || user.email}!`,
+      });
+      router.push('/');
+    } else {
+      toast({
+        title: "Google Sign-In Failed",
+        description: authError || "Could not sign in with Google. Please try again.",
         variant: "destructive",
       });
     }
@@ -61,7 +83,7 @@ export default function LoginPage() {
         <CardTitle className="text-2xl font-bold text-center text-foreground">Log In to FlexFit AI</CardTitle>
         <CardDescription className="text-center text-muted-foreground">Enter your credentials to access your account.</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -106,12 +128,34 @@ export default function LoginPage() {
                 <span>{authError}</span>
               </div>
             )}
-            <Button type="submit" disabled={isLoading} className="w-full shadow-md">
+            <Button type="submit" disabled={isLoading || isGoogleLoading} className="w-full shadow-md">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
               Log In
             </Button>
           </form>
         </Form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-card px-2 text-muted-foreground">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <Button 
+          variant="outline" 
+          onClick={handleGoogleSignIn} 
+          disabled={isLoading || isGoogleLoading} 
+          className="w-full shadow-md"
+        >
+          {isGoogleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
+          Sign in with Google
+        </Button>
+
       </CardContent>
       <CardFooter className="flex flex-col items-center space-y-2 pt-6">
         <p className="text-sm text-muted-foreground">

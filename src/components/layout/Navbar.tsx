@@ -6,17 +6,19 @@ import { useRouter, usePathname } from 'next/navigation';
 import { FlexFitAILogo } from '@/components/icons/FlexFitAILogo';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose, SheetHeader } from '@/components/ui/sheet';
-import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign } from 'lucide-react'; 
+import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign, Home, Bot, RefreshCw, VideoIcon, UsersIcon, BarChart3, Settings } from 'lucide-react'; 
 import { useAuth } from '@/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
 
-const baseNavItems = [
-  { href: '/generate-plan', label: 'Generate Plan' },
-  { href: '/adapt-plan', label: 'Adapt Plan' },
-  { href: '/form-check', label: 'Form Check' },
-  { href: '/challenges', label: 'Challenges' },
-  { href: '/pricing', label: 'Pricing', icon: DollarSign },
+const allNavItems = [
+  { href: '/', label: 'Home', icon: Home, authRequired: false },
+  { href: '/generate-plan', label: 'Generate Plan', icon: Bot, authRequired: false },
+  { href: '/adapt-plan', label: 'Adapt Plan', icon: RefreshCw, authRequired: true },
+  { href: '/form-check', label: 'Form Check', icon: VideoIcon, authRequired: false },
+  { href: '/challenges', label: 'Challenges', icon: UsersIcon, authRequired: false },
+  { href: '/pricing', label: 'Pricing', icon: DollarSign, authRequired: false },
+  { href: '/profile', label: 'Profile', icon: UserCircle, authRequired: true },
 ];
 
 export function Navbar() {
@@ -31,9 +33,7 @@ export function Navbar() {
   
   const userInitial = user?.displayName ? user.displayName.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : '');
 
-  const navItems = user 
-    ? [...baseNavItems, { href: '/profile', label: 'Profile', icon: UserCircle }]
-    : baseNavItems;
+  const navItems = allNavItems.filter(item => !item.authRequired || (item.authRequired && user));
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -42,12 +42,13 @@ export function Navbar() {
         <div className="flex items-center">
           <Button variant="ghost" size="icon" asChild aria-label="View Pricing Plans">
             <Link href="/pricing">
-              <DollarSign className="h-6 w-6" />
+              <DollarSign className="h-5 w-5" />
             </Link>
           </Button>
         </div>
 
         {/* Center: Logo */}
+        {/* This Link should NOT have SheetClose as it's part of the main header, not the sheet content meant to close a sheet. */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <Link href="/" aria-label="FlexFit AI Homepage">
             <FlexFitAILogo className="h-8 w-auto" />
@@ -64,14 +65,16 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[320px] flex flex-col p-0">
               <SheetHeader className="p-4 border-b">
-                <SheetTitle> 
-                  <SheetClose asChild>
+                <div className="flex justify-between items-center">
+                  {/* Logo inside the sheet - this one CAN close the sheet */}
+                  <SheetClose asChild> 
                     <Link href="/" className="flex items-center space-x-2">
-                       <FlexFitAILogo className="h-7 w-auto" />
+                      <FlexFitAILogo className="h-7 w-auto" />
+                      <span className="font-semibold text-lg text-foreground">FlexFit AI</span>
                     </Link>
                   </SheetClose>
-                  <span className="sr-only">Main Menu</span> 
-                </SheetTitle>
+                </div>
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               </SheetHeader>
               
               <nav className="flex flex-col space-y-1 p-4 flex-grow overflow-y-auto">
@@ -93,7 +96,7 @@ export function Navbar() {
                 ))}
               </nav>
 
-              {/* Mobile Auth Buttons / User Info */}
+              {/* Auth Controls / User Info */}
               <div className="mt-auto border-t p-4 space-y-3">
                 {loading ? (
                   <div className="h-10 w-full animate-pulse bg-muted rounded-md mb-2" />

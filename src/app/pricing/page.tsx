@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { CheckCircle, Sparkles, Users, Video, ListChecks, Repeat, LifeBuoy, DollarSign, Zap, Gem, ShieldCheck, Star } from "lucide-react"; // Added Gem, ShieldCheck, Star
+import { CheckCircle, Sparkles, Users, Video, ListChecks, Repeat, LifeBuoy, DollarSign, Zap, Gem, ShieldCheck, Star, ClipboardList, Salad, Apple } from "lucide-react"; // Added ClipboardList, Salad, Apple
 import Link from "next/link";
 
 interface Feature {
@@ -36,6 +36,7 @@ const plans: Plan[] = [
       { text: "Advanced Form Check (10 videos/month)", icon: Video },
       { text: "Adaptive Workout Adjustments", icon: Repeat },
       { text: "Full Access to Community Challenges", icon: Users },
+      { text: "Basic Diet Plan Guidance", icon: ClipboardList }, // Added
       { text: "Detailed Progress Tracking & Analytics", icon: Zap },
     ],
     cta: "Choose Premium",
@@ -52,6 +53,7 @@ const plans: Plan[] = [
     features: [
       { text: "All Premium Features Included", icon: CheckCircle },
       { text: "Unlimited Advanced Form Checks", icon: Video },
+      { text: "Personalized Diet Plan Suggestions", icon: Salad }, // Added
       { text: "Personalized AI Coaching Insights", icon: Sparkles },
       { text: "Priority Email Support", icon: LifeBuoy },
       { text: "Monthly Progress Review Call (15 min)", icon: Star },
@@ -69,10 +71,10 @@ const plans: Plan[] = [
     description: "The ultimate, all-inclusive fitness experience.",
     features: [
       { text: "All Platinum Features Included", icon: CheckCircle },
+      { text: "Custom Nutrition Plan Guidance", icon: Apple }, // Changed icon to Apple for variety
       { text: "Dedicated AI Coach Access", icon: Gem },
       { text: "24/7 Priority Support (Chat & Email)", icon: ShieldCheck },
       { text: "Early Access to New Features & Beta Programs", icon: Zap },
-      { text: "Custom Nutrition Plan Guidance", icon: ListChecks }, // Re-using ListChecks for variety
     ],
     cta: "Choose Diamond",
     link: "/subscribe?plan=diamond",

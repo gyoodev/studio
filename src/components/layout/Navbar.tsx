@@ -107,15 +107,14 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] flex flex-col">
-              {/* Added SheetTitle for accessibility as per Radix UI recommendation */}
               <SheetTitle className="sr-only">Main Menu</SheetTitle> 
               
               <nav className="flex flex-col space-y-3 mt-8 flex-grow">
-                <Link href="/" className="mb-4">
-                   <SheetClose asChild>
-                    <FlexFitAILogo className="h-8 w-auto" /> {/* Updated usage */}
-                   </SheetClose>
-                </Link>
+                <SheetClose asChild>
+                  <Link href="/" className="mb-4 flex items-center space-x-2">
+                    <FlexFitAILogo className="h-8 w-auto" />
+                  </Link>
+                </SheetClose>
                 {navItems.map((item) => (
                    <SheetClose asChild key={item.label}>
                     <Link

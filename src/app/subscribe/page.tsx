@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, CreditCard, LogIn, UserPlus, AlertCircle, CheckCircle, ShoppingCart, Send, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'; // Added Firestore imports
-import { db } from '@/lib/firebase'; // Added db import
+import { doc, updateDoc, serverTimestamp, Timestamp } from 'firebase/firestore'; // Added Timestamp
+import { db, auth as firebaseAuth } from '@/lib/firebase'; // Renamed auth import to avoid conflict
 
 // Placeholder for plan details - in a real app, this might come from a config or DB
 const PLAN_DETAILS: Record<string, { name: string; price: string }> = {
@@ -22,7 +22,7 @@ const PLAN_DETAILS: Record<string, { name: string; price: string }> = {
 function SubscribePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, loading: authLoading, fetchUserProfile } = useAuth(); // Added fetchUserProfile
+  const { user, loading: authLoading, fetchUserProfile } = useAuth();
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [planDetails, setPlanDetails] = useState<{ name: string; price: string } | null>(null);
@@ -41,7 +41,6 @@ function SubscribePageContent() {
       });
       router.push('/pricing');
     } else {
-        // If no plan is in query params, redirect to pricing.
         router.push('/pricing');
     }
   }, [searchParams, router, toast]);
@@ -63,45 +62,44 @@ function SubscribePageContent() {
     });
 
     // Simulate payment processing
-    setTimeout(async () => {
-      try {
-        const userDocRef = doc(db, 'users', user.uid);
-        const buyDate = serverTimestamp();
-        const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + 30); // Mock 30-day subscription
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
-        const subscriptionData = {
-          subscriptionPlan: selectedPlan,
-          subscriptionStatus: "active",
-          subscriptionBuyDate: buyDate,
-          subscriptionExpiryDate: expiryDate,
-        };
+    try {
+      const userDocRef = doc(db, 'users', user.uid);
+      const buyDate = new Date(); // Use JS Date for buyDate, Firestore will convert to Timestamp
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 30); // Mock 30-day subscription
 
-        await updateDoc(userDocRef, subscriptionData);
-        
-        // Refresh user profile data in AuthContext to get new subscription info
-        if (auth.currentUser) { // Ensure currentUser is available
-          await fetchUserProfile(auth.currentUser);
-        }
+      const subscriptionData = {
+        subscriptionPlan: selectedPlan,
+        subscriptionStatus: "active",
+        subscriptionBuyDate: Timestamp.fromDate(buyDate), // Convert JS Date to Firestore Timestamp
+        subscriptionExpiryDate: Timestamp.fromDate(expiryDate), // Convert JS Date to Firestore Timestamp
+      };
 
-
-        toast({
-          title: "Subscription Activated (Mock)",
-          description: `Your ${planDetails.name} has been activated using ${method}! Your profile is updated.`,
-          variant: "success",
-        });
-        router.push('/profile'); 
-      } catch (error) {
-        console.error("Error updating subscription status in DB:", error);
-        toast({
-          title: "Database Update Failed",
-          description: "Could not update your subscription status. Please contact support.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsProcessingPayment(false);
+      await updateDoc(userDocRef, subscriptionData);
+      
+      // Refresh user profile data in AuthContext to get new subscription info
+      if (firebaseAuth.currentUser) { 
+        await fetchUserProfile(firebaseAuth.currentUser, true); // Pass true to force refresh
       }
-    }, 2000);
+
+      toast({
+        title: "Subscription Activated (Mock)",
+        description: `Your ${planDetails.name} has been activated using ${method}! Your profile is updated.`,
+        variant: "success",
+      });
+      router.push('/profile'); 
+    } catch (error) {
+      console.error("Error updating subscription status in DB:", error);
+      toast({
+        title: "Database Update Failed",
+        description: "Could not update your subscription status. Please contact support.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingPayment(false);
+    }
   };
 
   if (authLoading) {
@@ -113,19 +111,11 @@ function SubscribePageContent() {
   }
 
   if (!selectedPlan || !planDetails) {
+     // This case should ideally be handled by the useEffect redirecting to /pricing
     return (
-      <div className="container py-12 text-center">
-        <Card className="max-w-md mx-auto shadow-xl">
-          <CardHeader>
-            <CardTitle>No Plan Selected</CardTitle>
-            <CardDescription>Please select a subscription plan to continue.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild>
-              <Link href="/pricing">View Pricing Plans</Link>
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="ml-2">Loading plan details...</p>
       </div>
     );
   }
@@ -183,7 +173,7 @@ function SubscribePageContent() {
           </div>
           
           <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold mb-3">Select Payment Method</h3>
+            <h3 className="text-lg font-semibold mb-3">Select Payment Method (Mock)</h3>
             <div className="space-y-3">
               <Button 
                 onClick={() => handleMockPayment('Google Pay')} 
@@ -235,3 +225,4 @@ export default function SubscribePage() {
     </Suspense>
   );
 }
+

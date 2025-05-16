@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { FlexFitAILogo } from '@/components/icons/FlexFitAILogo';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose, SheetHeader } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose, SheetHeader } from '@/components/ui/sheet'; 
 import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign, Home, Bot, RefreshCw, VideoIcon, UsersIcon } from 'lucide-react'; 
 import { useAuth } from '@/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,7 +18,6 @@ const allNavItems = [
   { href: '/form-check', label: 'Form Check', icon: VideoIcon, authRequired: false },
   { href: '/challenges', label: 'Challenges', icon: UsersIcon, authRequired: false },
   { href: '/pricing', label: 'Pricing', icon: DollarSign, authRequired: false },
-  // Profile link is handled separately below if user is authenticated
 ];
 
 export function Navbar() {
@@ -33,16 +32,13 @@ export function Navbar() {
   
   const userInitial = user?.displayName ? user.displayName.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : '');
 
-  // Filter nav items based on auth status
   let navItems = allNavItems.filter(item => !item.authRequired || (item.authRequired && user));
-  // Add Profile link if user is authenticated
   if (user) {
     navItems.push({ href: '/profile', label: 'Profile', icon: UserCircle, authRequired: true });
   }
 
-
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-bl-xl rounded-br-xl">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-bl-2xl rounded-br-2xl">
       <div className="container flex h-16 items-center justify-between relative">
         {/* Left Side: Plans Icon Button */}
         <div className="flex items-center">
@@ -53,7 +49,7 @@ export function Navbar() {
           </Button>
         </div>
 
-        {/* Center: Logo */}
+        {/* Center: Logo - Not wrapped in SheetClose */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <Link href="/" aria-label="FlexFit AI Homepage">
             <FlexFitAILogo className="h-8 w-auto" />
@@ -70,13 +66,13 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[320px] flex flex-col p-0 rounded-bl-xl rounded-br-xl">
               <SheetHeader className="p-4 border-b">
-                <div className="flex justify-between items-center">
-                   <SheetClose asChild> 
-                    <Link href="/" className="flex items-center space-x-2">
-                      <FlexFitAILogo className="h-7 w-auto" />
-                    </Link>
-                  </SheetClose>
-                </div>
+                 <div className="flex justify-between items-center">
+                    <SheetClose asChild> 
+                      <Link href="/" className="flex items-center space-x-2">
+                        <FlexFitAILogo className="h-7 w-auto" />
+                      </Link>
+                    </SheetClose>
+                  </div>
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               </SheetHeader>
               

@@ -58,7 +58,7 @@ export default function LoginPage() {
   return (
     <Card className="w-full shadow-xl">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Log In to FlexAI Fit</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">Log In to FlexFit AI</CardTitle>
         <CardDescription className="text-center">Enter your credentials to access your account.</CardDescription>
       </CardHeader>
       <CardContent>

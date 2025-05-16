@@ -31,7 +31,7 @@ const features = [
   },
   {
     title: 'Community Challenges',
-    description: 'Join fun challenges, compete on leaderboards (opt-in), and stay motivated with the FlexAI Fit community.',
+    description: 'Join fun challenges, compete on leaderboards (opt-in), and stay motivated with the FlexFit AI community.', // Updated community name
     icon: Users,
     link: '/challenges',
     image: 'https://placehold.co/600x400.png',
@@ -46,7 +46,7 @@ export default function HomePage() {
         <div className="container px-4 md:px-6 text-center">
           <Dumbbell className="mx-auto h-16 w-16 mb-6 text-primary" />
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-            Welcome to <span className="text-primary">FlexAI</span> <span className="text-accent">Fit</span>
+            Welcome to <span className="text-primary">FlexFit</span> <span className="text-accent">AI</span>
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground md:text-xl">
             Your personal AI fitness coach. Achieve your health goals with intelligent workout plans, smart form analysis, and adaptive training.

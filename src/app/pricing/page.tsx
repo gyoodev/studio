@@ -41,7 +41,7 @@ const plans: Plan[] = [
     variant: "outline",
   },
   {
-    name: "FlexAI Pro",
+    name: "FlexFit Pro", // Updated Plan Name
     price: "$9.99",
     priceSuffix: "/ month",
     priceNumeric: 9.99,
@@ -59,7 +59,7 @@ const plans: Plan[] = [
     variant: "default",
   },
   {
-    name: "FlexAI Elite",
+    name: "FlexFit Elite", // Updated Plan Name
     price: "$19.99",
     priceSuffix: "/ month",
     priceNumeric: 19.99,
@@ -86,7 +86,7 @@ export default function PricingPage() {
           Find the Perfect Plan
         </h1>
         <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground md:text-xl">
-          Simple, transparent pricing. Elevate your fitness journey with FlexAI Fit today.
+          Simple, transparent pricing. Elevate your fitness journey with FlexFit AI today.
         </p>
       </header>
 

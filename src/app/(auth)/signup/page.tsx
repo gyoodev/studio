@@ -45,7 +45,7 @@ export default function SignupPage() {
     if (user) {
       toast({
         title: "Signup Successful!",
-        description: `Welcome to FlexAI Fit, ${user.displayName || user.email}!`,
+        description: `Welcome to FlexFit AI, ${user.displayName || user.email}!`,
       });
       router.push('/'); // Redirect to homepage or dashboard
     } else {
@@ -60,7 +60,7 @@ export default function SignupPage() {
   return (
     <Card className="w-full shadow-xl">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Create Your FlexAI Fit Account</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">Create Your FlexFit AI Account</CardTitle>
         <CardDescription className="text-center">Join us to get personalized fitness plans and track your progress.</CardDescription>
       </CardHeader>
       <CardContent>

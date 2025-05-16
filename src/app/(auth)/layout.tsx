@@ -1,6 +1,6 @@
 
 import type { ReactNode } from 'react';
-import { FlexAIFitLogo } from '@/components/icons/FlexAIFitLogo';
+import { FlexFitAILogo } from '@/components/icons/FlexFitAILogo'; // Updated import
 import Link from 'next/link';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
@@ -8,7 +8,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="mb-8">
         <Link href="/">
-          <FlexAIFitLogo className="h-10 w-auto" />
+          <FlexFitAILogo className="h-10 w-auto" /> {/* Updated usage */}
         </Link>
       </div>
       <div className="w-full max-w-md">

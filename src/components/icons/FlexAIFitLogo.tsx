@@ -1,13 +1,13 @@
 import type { SVGProps } from 'react';
 
-export function FlexAIFitLogo(props: SVGProps<SVGSVGElement>) {
+export function FlexFitAILogo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 200 50"
       width="120"
       height="30"
-      aria-label="FlexAI Fit Logo"
+      aria-label="FlexFit AI Logo"
       {...props}
     >
       <defs>
@@ -26,9 +26,9 @@ export function FlexAIFitLogo(props: SVGProps<SVGSVGElement>) {
         fontFamily="var(--font-geist-sans), system-ui, sans-serif"
         fontSize="30"
         fontWeight="bold"
-        fill="hsl(var(--foreground))"
       >
-        FlexAI Fit
+        <tspan fill="hsl(var(--primary))">FlexFit</tspan>
+        <tspan fill="hsl(var(--accent))"> AI</tspan>
       </text>
     </svg>
   );

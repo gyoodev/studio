@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation'; // Added usePathname
-import { FlexAIFitLogo } from '@/components/icons/FlexAIFitLogo';
+import { FlexFitAILogo } from '@/components/icons/FlexFitAILogo'; // Updated import
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from '@/components/ui/sheet'; // SheetTitle added
 import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign } from 'lucide-react'; // Added DollarSign
@@ -39,7 +39,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <FlexAIFitLogo className="h-8 w-auto" />
+          <FlexFitAILogo className="h-8 w-auto" /> {/* Updated usage */}
         </Link>
         
         {/* Desktop Navigation */}
@@ -113,7 +113,7 @@ export function Navbar() {
               <nav className="flex flex-col space-y-3 mt-8 flex-grow">
                 <Link href="/" className="mb-4">
                    <SheetClose asChild>
-                    <FlexAIFitLogo className="h-8 w-auto" />
+                    <FlexFitAILogo className="h-8 w-auto" /> {/* Updated usage */}
                    </SheetClose>
                 </Link>
                 {navItems.map((item) => (

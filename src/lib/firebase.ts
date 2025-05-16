@@ -14,31 +14,28 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
+let db: Firestore | undefined;
 let analytics: Analytics | undefined;
 
 if (!firebaseConfig.apiKey) {
   console.error(
-    'Firebase API key is missing. Please ensure your .env.local file is correctly set up with NEXT_PUBLIC_FIREBASE_API_KEY and other Firebase credentials.'
+    'Firebase API key is missing. Please ensure your .env.local file is correctly set up in the project ROOT with NEXT_PUBLIC_FIREBASE_API_KEY and other Firebase credentials. Restart your dev server after creating/modifying .env.local.'
   );
-  // @ts-ignore
   app = undefined;
 } else if (!getApps().length) {
   try {
     app = initializeApp(firebaseConfig);
   } catch (error) {
     console.error('Failed to initialize Firebase app. Check your firebaseConfig and .env.local file:', error);
-    // @ts-ignore
     app = undefined;
   }
 } else {
   app = getApps()[0];
 }
 
-// Initialize Auth, Firestore, and Analytics only if app was successfully initialized
-if (app!) {
+if (app) {
   auth = getAuth(app);
   db = getFirestore(app);
 
@@ -62,20 +59,19 @@ if (app!) {
         analytics = getAnalytics(app);
       } catch (error) {
         console.error("Failed to initialize Firebase Analytics:", error);
+        analytics = undefined;
       }
     } else {
-      console.warn("Firebase Measurement ID is not set. Analytics (telemetry) will not be initialized. Please set NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID in your .env.local file.");
+      console.warn("Firebase Measurement ID is not set in .env.local. Analytics (telemetry) will not be initialized. Please set NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID.");
+      analytics = undefined;
     }
   }
 } else {
-  if (firebaseConfig.apiKey) { 
-    console.error("Firebase app is not initialized despite API key being present. Auth, Firestore, and Analytics will not be available.");
-  }
-  // @ts-ignore
+  // If app initialization failed, ensure auth, db, analytics are undefined
   auth = undefined;
-  // @ts-ignore
   db = undefined;
   analytics = undefined;
+  // A general error about app initialization (or missing API key) would have been logged above.
 }
 
 export { app, auth, db, analytics };

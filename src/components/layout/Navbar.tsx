@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { FlexFitAILogo } from '@/components/icons/FlexFitAILogo';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose, SheetHeader } from '@/components/ui/sheet';
-import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign, Home, Bot, RefreshCw, VideoIcon, UsersIcon, BarChart3, Settings } from 'lucide-react'; 
+import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign, Home, Bot, RefreshCw, VideoIcon, UsersIcon } from 'lucide-react'; 
 import { useAuth } from '@/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
@@ -35,14 +35,14 @@ export function Navbar() {
 
   // Filter nav items based on auth status
   let navItems = allNavItems.filter(item => !item.authRequired || (item.authRequired && user));
-  // Add Profile link if user is authenticated and it's not already in the list (it's not, by design of allNavItems)
+  // Add Profile link if user is authenticated
   if (user) {
     navItems.push({ href: '/profile', label: 'Profile', icon: UserCircle, authRequired: true });
   }
 
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-bl-xl rounded-br-xl">
       <div className="container flex h-16 items-center justify-between relative">
         {/* Left Side: Plans Icon Button */}
         <div className="flex items-center">
@@ -71,10 +71,9 @@ export function Navbar() {
             <SheetContent side="right" className="w-[300px] sm:w-[320px] flex flex-col p-0 rounded-bl-xl rounded-br-xl">
               <SheetHeader className="p-4 border-b">
                 <div className="flex justify-between items-center">
-                  <SheetClose asChild> 
+                   <SheetClose asChild> 
                     <Link href="/" className="flex items-center space-x-2">
                       <FlexFitAILogo className="h-7 w-auto" />
-                      <span className="font-semibold text-lg text-foreground">FlexFit AI</span>
                     </Link>
                   </SheetClose>
                 </div>
@@ -149,4 +148,3 @@ export function Navbar() {
     </header>
   );
 }
-

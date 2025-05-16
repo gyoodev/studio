@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Users, Trophy, Star } from 'lucide-react';
+import { Users, Trophy, Star, Dumbbell } from 'lucide-react'; // Added Dumbbell here
 import Image from 'next/image';
 
 interface Challenge {
@@ -45,7 +46,7 @@ const challengesData: Challenge[] = [
     id: '3',
     title: 'Strength Starter: Lift Off',
     description: 'Log 3 strength training sessions this week focusing on compound lifts.',
-    icon: Dumbbell,
+    icon: Dumbbell, // Now uses the imported Dumbbell from lucide-react
     image: 'https://placehold.co/600x400.png',
     imageHint: 'weights gym',
     participants: 930,
@@ -175,11 +176,4 @@ export default function ChallengesPage() {
   );
 }
 
-// Helper component, already present in lucide-react
-const Dumbbell = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l1.414-1.414a2 2 0 1 1 2.829 2.828l-1.414 1.414ZM14.4 9.6 9.6 14.4"/>
-    <path d="M5.343 2.515a2 2 0 1 1 2.829 2.828l-1.414 1.414a2 2 0 1 1-2.829-2.828l1.414-1.414Z"/><path d="m12 12-1.414-1.414a2 2 0 1 1 2.828-2.829l1.414 1.414a2 2 0 1 1-2.829 2.829L12 12Z"/>
-    <path d="M12 12l1.414 1.414a2 2 0 1 1-2.829 2.829L9.172 14.828a2 2 0 1 1 2.829-2.829L12 12Z"/>
-  </svg>
-);
+// Removed local Dumbbell SVG component

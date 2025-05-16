@@ -34,6 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [clientSideCheckComplete, setClientSideCheckComplete] = useState(false);
+  const [currentPathname, setCurrentPathname] = useState('');
 
   const fetchUserProfile = async (firebaseUser: User): Promise<UserProfile | null> => {
     if (!firebaseUser) return null;
@@ -50,8 +52,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // photoURL: profileData.photoURL || firebaseUser.photoURL, // Add if you store custom photoURL
         };
       } else {
-        // Profile might not exist yet if signup process was interrupted or it's a new social login
-        // Create a basic profile if it doesn't exist
         const newUserProfile: Pick<UserProfile, 'uid' | 'email' | 'displayName'> & { createdAt: any } = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
@@ -68,20 +68,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-
   useEffect(() => {
+    // This effect runs only on the client after the initial mount.
+    setCurrentPathname(window.location.pathname);
+    setClientSideCheckComplete(true);
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        setLoading(true);
+        // setLoading(true); // setLoading is already true initially or set by other operations.
         const userProfile = await fetchUserProfile(firebaseUser);
         setUser(userProfile);
       } else {
         setUser(null);
       }
-      setLoading(false);
+      setLoading(false); // Auth state is now resolved.
     });
     return () => unsubscribe();
-  }, []);
+  }, []); // Empty dependency array ensures this runs once on mount (client-side).
 
   const signUpWithEmail = async (email: string, password: string, displayName?: string): Promise<UserProfile | null> => {
     setLoading(true);
@@ -135,7 +138,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   };
 
-  if (loading && typeof window !== 'undefined' && window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+  // Conditional rendering for the global loader:
+  // Show loader if auth is still loading, client-side checks are complete, and not on login/signup page.
+  if (loading && clientSideCheckComplete && currentPathname !== '/login' && currentPathname !== '/signup') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -143,6 +148,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
   }
 
+  // Default render:
+  // - On server-side (clientSideCheckComplete is false)
+  // - On initial client-side render before useEffect runs (clientSideCheckComplete is false)
+  // - When loading is false (auth state resolved)
+  // - When on /login or /signup pages (even if loading and clientSideCheckComplete are true)
   return (
     <AuthContext.Provider value={{ user, loading, error, signUpWithEmail, signInWithEmail, logout, fetchUserProfile }}>
       {children}

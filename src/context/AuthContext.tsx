@@ -9,16 +9,21 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
-  GoogleAuthProvider, // Added
-  signInWithPopup,    // Added
+  GoogleAuthProvider, 
+  signInWithPopup,    
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore'; // Added updateDoc
+import { doc, setDoc, getDoc, serverTimestamp, updateDoc, Timestamp } from 'firebase/firestore'; // Added Timestamp
 import { auth, db } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 
 interface UserProfile extends User {
   displayName?: string | null;
-  photoURL?: string | null; // Ensure photoURL is part of UserProfile
+  photoURL?: string | null;
+  // Subscription fields
+  subscriptionPlan?: "free" | "premium" | "platinum" | "diamond" | string; // Added string for flexibility
+  subscriptionStatus?: "active" | "inactive" | "cancelled" | "past_due";
+  subscriptionBuyDate?: Timestamp | Date | null; // Firestore Timestamp or JS Date
+  subscriptionExpiryDate?: Timestamp | Date | null; // Firestore Timestamp or JS Date
 }
 
 interface AuthContextType {
@@ -27,7 +32,7 @@ interface AuthContextType {
   error: string | null;
   signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<UserProfile | null>;
   signInWithEmail: (email: string, password: string) => Promise<UserProfile | null>;
-  signInWithGoogle: () => Promise<UserProfile | null>; // Added
+  signInWithGoogle: () => Promise<UserProfile | null>; 
   logout: () => Promise<void>;
   fetchUserProfile: (firebaseUser: User) => Promise<UserProfile | null>;
 }
@@ -43,62 +48,70 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserProfile = async (firebaseUser: User): Promise<UserProfile | null> => {
     if (!firebaseUser) return null;
+    setLoading(true); // Set loading true when fetching profile
     try {
       const userDocRef = doc(db, 'users', firebaseUser.uid);
       const userDocSnap = await getDoc(userDocRef);
       
-      const profileDataToSet = {
+      const existingData = userDocSnap.exists() ? userDocSnap.data() : {};
+      
+      // Prioritize Firebase Auth data for core fields, then Firestore, then defaults
+      const profileDataToSet: Partial<UserProfile> = {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
-        displayName: firebaseUser.displayName || userDocSnap.data()?.displayName || firebaseUser.email?.split('@')[0],
-        photoURL: firebaseUser.photoURL || userDocSnap.data()?.photoURL || null, // Capture Google photoURL
+        displayName: firebaseUser.displayName || existingData?.displayName || firebaseUser.email?.split('@')[0],
+        photoURL: firebaseUser.photoURL || existingData?.photoURL || null,
         lastLogin: serverTimestamp(),
+        // Merge existing subscription data if present, otherwise initialize
+        subscriptionPlan: existingData?.subscriptionPlan || "free",
+        subscriptionStatus: existingData?.subscriptionStatus || "inactive",
+        subscriptionBuyDate: existingData?.subscriptionBuyDate || null,
+        subscriptionExpiryDate: existingData?.subscriptionExpiryDate || null,
       };
 
       if (userDocSnap.exists()) {
-        // Update existing profile with latest info (especially photoURL from Google)
-        await updateDoc(userDocRef, {
-            ...profileDataToSet,
-            displayName: profileDataToSet.displayName, // Ensure displayName is updated if it changed via Google
-            photoURL: profileDataToSet.photoURL, // Ensure photoURL is updated
-        });
-        return { ...firebaseUser, ...userDocSnap.data(), ...profileDataToSet } as UserProfile;
+        await updateDoc(userDocRef, profileDataToSet);
       } else {
-        // If user exists in Auth but not in Firestore, create a new profile doc
         await setDoc(userDocRef, { ...profileDataToSet, createdAt: serverTimestamp() });
-        return { ...firebaseUser, ...profileDataToSet } as UserProfile;
       }
+      const updatedProfile = { ...firebaseUser, ...profileDataToSet } as UserProfile;
+      setUser(updatedProfile);
+      return updatedProfile;
     } catch (e) {
       console.error("Error fetching/creating user profile in Firestore:", e);
       setError((e as Error).message);
       // Fallback to Firebase Auth user data if Firestore interaction fails
-      return { 
+      const fallbackProfile = { 
         ...firebaseUser, 
         displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
-        photoURL: firebaseUser.photoURL 
+        photoURL: firebaseUser.photoURL,
+        subscriptionPlan: "free", // Default subscription info on error
+        subscriptionStatus: "inactive",
       } as UserProfile;
+      setUser(fallbackProfile);
+      return fallbackProfile;
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Ensure this runs only on the client
     if (typeof window !== 'undefined') {
       setCurrentPathname(window.location.pathname);
-      setClientSideCheckComplete(true); // Mark client-side check as complete
+      setClientSideCheckComplete(true);
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const userProfile = await fetchUserProfile(firebaseUser);
-        setUser(userProfile);
+        await fetchUserProfile(firebaseUser); // await to ensure profile is loaded
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
     return () => unsubscribe();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array: runs once on mount and cleans up on unmount
+  }, []); 
 
   const signUpWithEmail = async (email: string, password: string, displayName?: string): Promise<UserProfile | null> => {
     setLoading(true);
@@ -107,24 +120,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
       
-      const userProfileData = {
+      const userProfileData: Partial<UserProfile> = {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         displayName: displayName || firebaseUser.email?.split('@')[0],
         photoURL: firebaseUser.photoURL,
         createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
+        subscriptionPlan: "free",
+        subscriptionStatus: "inactive",
+        subscriptionBuyDate: null,
+        subscriptionExpiryDate: null,
       };
       await setDoc(doc(db, 'users', firebaseUser.uid), userProfileData);
       
       const fullUserProfile = { ...firebaseUser, ...userProfileData } as UserProfile;
       setUser(fullUserProfile);
-      setLoading(false);
       return fullUserProfile;
     } catch (e) {
       setError((e as Error).message);
-      setLoading(false);
       return null;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -134,10 +151,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
-      const fullUserProfile = await fetchUserProfile(firebaseUser);
-      setUser(fullUserProfile);
-      setLoading(false);
-      return fullUserProfile;
+      return await fetchUserProfile(firebaseUser); // fetchUserProfile sets user and loading
     } catch (e) {
       setError((e as Error).message);
       setLoading(false);
@@ -152,11 +166,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const firebaseUser = result.user;
-      // fetchUserProfile will create/update the Firestore document
-      const fullUserProfile = await fetchUserProfile(firebaseUser); 
-      setUser(fullUserProfile);
-      setLoading(false);
-      return fullUserProfile;
+      return await fetchUserProfile(firebaseUser); // fetchUserProfile sets user and loading
     } catch (e) {
       setError((e as Error).message);
       console.error("Google Sign-In Error:", e);
@@ -176,7 +186,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   };
 
-  // Conditional rendering of loader based on client-side checks
   if (loading && clientSideCheckComplete && currentPathname !== '/login' && currentPathname !== '/signup') {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -184,7 +193,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       </div>
     );
   }
-  // If not loading or on auth pages, or if client-side check is not complete (SSR), render children
   return (
     <AuthContext.Provider value={{ user, loading, error, signUpWithEmail, signInWithEmail, signInWithGoogle, logout, fetchUserProfile }}>
       {children}

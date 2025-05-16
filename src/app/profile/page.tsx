@@ -6,10 +6,18 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { UserCircle2, Mail, Edit3, CreditCard, ShieldCheck, Dumbbell, Salad, ChevronRight, Sparkles } from 'lucide-react';
+import { UserCircle2, Mail, Edit3, CreditCard, ShieldCheck, Dumbbell, Salad, ChevronRight, Sparkles, CalendarDays } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import { Timestamp } from 'firebase/firestore';
+
+// Helper function to format Firestore Timestamp or JS Date to a readable string
+const formatDate = (date: Timestamp | Date | null | undefined): string => {
+  if (!date) return 'N/A';
+  const jsDate = date instanceof Timestamp ? date.toDate() : date;
+  return jsDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+};
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -38,7 +46,7 @@ export default function ProfilePage() {
               <Skeleton className="h-6 w-48" />
               <Skeleton className="h-10 w-full mt-2" />
             </div>
-            <Separator className="my-6" />
+             <Separator className="my-6" />
              <div className="space-y-1">
               <Skeleton className="h-5 w-32 mb-2" />
               <Skeleton className="h-8 w-full" />
@@ -64,9 +72,9 @@ export default function ProfilePage() {
   
   const userInitial = user.displayName ? user.displayName.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : '?');
 
-  // Placeholder for subscription status - in a real app, this would come from your backend/DB
-  const currentSubscription = "Free Tier"; 
-  const hasActiveSubscription = currentSubscription !== "Free Tier";
+  const currentSubscriptionPlan = user.subscriptionPlan || "Free";
+  const currentSubscriptionStatus = user.subscriptionStatus || "inactive";
+  const hasActiveSubscription = currentSubscriptionStatus === "active" && currentSubscriptionPlan !== "free";
 
   return (
     <AuthGuard>
@@ -115,9 +123,18 @@ export default function ProfilePage() {
                     <ShieldCheck className={`h-6 w-6 ${hasActiveSubscription ? 'text-accent' : 'text-muted-foreground'}`} />
                     <div>
                         <p className="text-sm font-medium text-muted-foreground">Current Plan</p>
-                        <p className={`text-lg font-semibold ${hasActiveSubscription ? 'text-accent' : ''}`}>{currentSubscription}</p>
+                        <p className={`text-lg font-semibold capitalize ${hasActiveSubscription ? 'text-accent' : ''}`}>{currentSubscriptionPlan}</p>
                     </div>
                 </div>
+                 {user.subscriptionStatus === "active" && user.subscriptionExpiryDate && (
+                    <div className="flex items-center space-x-3">
+                        <CalendarDays className="h-5 w-5 text-muted-foreground" />
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Renews/Expires On</p>
+                            <p className="text-sm">{formatDate(user.subscriptionExpiryDate)}</p>
+                        </div>
+                    </div>
+                )}
                 <Button asChild className="w-full shadow-md" variant={hasActiveSubscription ? "outline" : "default"}>
                   <Link href="/pricing">
                     <CreditCard className="mr-2 h-4 w-4" /> 
@@ -158,5 +175,3 @@ export default function ProfilePage() {
     </AuthGuard>
   );
 }
-
-  

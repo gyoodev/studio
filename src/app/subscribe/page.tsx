@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, CreditCard, LogIn, UserPlus, AlertCircle, CheckCircle, ShoppingCart, Send, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'; // Added Firestore imports
+import { db } from '@/lib/firebase'; // Added db import
 
 // Placeholder for plan details - in a real app, this might come from a config or DB
 const PLAN_DETAILS: Record<string, { name: string; price: string }> = {
@@ -20,7 +22,7 @@ const PLAN_DETAILS: Record<string, { name: string; price: string }> = {
 function SubscribePageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, fetchUserProfile } = useAuth(); // Added fetchUserProfile
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [planDetails, setPlanDetails] = useState<{ name: string; price: string } | null>(null);
@@ -44,21 +46,61 @@ function SubscribePageContent() {
     }
   }, [searchParams, router, toast]);
 
-  const handleMockPayment = (method: string) => {
+  const handleMockPayment = async (method: string) => {
+    if (!user || !selectedPlan || !planDetails) {
+      toast({
+        title: "Error",
+        description: "User or plan details are missing. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsProcessingPayment(true);
     toast({
       title: "Processing Payment...",
-      description: `Attempting to pay with ${method}. This is a mock action.`,
+      description: `Attempting to pay for ${planDetails.name} with ${method}. This is a mock action.`,
     });
-    setTimeout(() => {
-      toast({
-        title: "Subscription Activated (Mock)",
-        description: `Your ${planDetails?.name} has been activated using ${method}!`,
-        variant: "success", // Changed to success (custom styling was there, but let's use variant)
-      });
-       // In a real app, you'd update user's subscription status in DB here.
-      setIsProcessingPayment(false);
-      router.push('/profile'); // Redirect to profile or a success page
+
+    // Simulate payment processing
+    setTimeout(async () => {
+      try {
+        const userDocRef = doc(db, 'users', user.uid);
+        const buyDate = serverTimestamp();
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 30); // Mock 30-day subscription
+
+        const subscriptionData = {
+          subscriptionPlan: selectedPlan,
+          subscriptionStatus: "active",
+          subscriptionBuyDate: buyDate,
+          subscriptionExpiryDate: expiryDate,
+        };
+
+        await updateDoc(userDocRef, subscriptionData);
+        
+        // Refresh user profile data in AuthContext to get new subscription info
+        if (auth.currentUser) { // Ensure currentUser is available
+          await fetchUserProfile(auth.currentUser);
+        }
+
+
+        toast({
+          title: "Subscription Activated (Mock)",
+          description: `Your ${planDetails.name} has been activated using ${method}! Your profile is updated.`,
+          variant: "success",
+        });
+        router.push('/profile'); 
+      } catch (error) {
+        console.error("Error updating subscription status in DB:", error);
+        toast({
+          title: "Database Update Failed",
+          description: "Could not update your subscription status. Please contact support.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsProcessingPayment(false);
+      }
     }, 2000);
   };
 
@@ -71,8 +113,6 @@ function SubscribePageContent() {
   }
 
   if (!selectedPlan || !planDetails) {
-    // This case should ideally be handled by redirection in useEffect,
-    // but it's a fallback.
     return (
       <div className="container py-12 text-center">
         <Card className="max-w-md mx-auto shadow-xl">
@@ -174,7 +214,7 @@ function SubscribePageContent() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              Note: This is a demonstration. No real payment will be processed. Clicking a button will simulate a successful subscription.
+              Note: This is a demonstration. No real payment will be processed. Clicking a button will simulate a successful subscription and update your profile.
             </p>
           </div>
 
@@ -195,5 +235,3 @@ export default function SubscribePage() {
     </Suspense>
   );
 }
-
-    

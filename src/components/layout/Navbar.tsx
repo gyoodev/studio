@@ -2,13 +2,14 @@
 "use client"; // Required for useAuth hook and Sheet interactions
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation'; // Added usePathname
 import { FlexAIFitLogo } from '@/components/icons/FlexAIFitLogo';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from '@/components/ui/sheet';
 import { Menu, LogOut, UserCircle, LogIn, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // Added Avatar
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from '@/lib/utils'; // Added cn
 
 const baseNavItems = [
   { href: '/generate-plan', label: 'Generate Plan' },
@@ -20,6 +21,7 @@ const baseNavItems = [
 export function Navbar() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname(); // Get current pathname
 
   const handleLogout = async () => {
     await logout();
@@ -45,7 +47,12 @@ export function Navbar() {
             <Link
               key={item.label}
               href={item.href}
-              className="transition-colors hover:text-primary"
+              className={cn(
+                "transition-colors",
+                pathname === item.href
+                  ? "text-primary font-semibold"
+                  : "text-muted-foreground hover:text-primary"
+              )}
             >
               {item.label}
             </Link>
@@ -98,7 +105,7 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] flex flex-col">
-              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle> 
               
               <nav className="flex flex-col space-y-3 mt-8 flex-grow">
                 <Link href="/" className="mb-4">
@@ -110,7 +117,12 @@ export function Navbar() {
                    <SheetClose asChild key={item.label}>
                     <Link
                       href={item.href}
-                      className="rounded-md p-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                      className={cn(
+                        "rounded-md p-2 text-base font-medium transition-colors",
+                        pathname === item.href
+                          ? "bg-primary text-primary-foreground"
+                          : "hover:bg-accent hover:text-accent-foreground"
+                      )}
                     >
                       {item.label}
                     </Link>

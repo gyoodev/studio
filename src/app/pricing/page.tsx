@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { CheckCircle, Sparkles, Users, Video, ListChecks, Repeat, LifeBuoy, DollarSign, Zap } from "lucide-react";
+import { CheckCircle, Sparkles, Users, Video, ListChecks, Repeat, LifeBuoy, DollarSign, Zap, Gem, ShieldCheck, Star } from "lucide-react"; // Added Gem, ShieldCheck, Star
 import Link from "next/link";
 
 interface Feature {
@@ -26,52 +26,56 @@ interface Plan {
 
 const plans: Plan[] = [
   {
-    name: "Basic",
-    price: "Free",
-    priceNumeric: 0,
-    description: "Get started with essential fitness tools.",
+    name: "Premium",
+    price: "$14.99",
+    priceSuffix: "/ month",
+    priceNumeric: 14.99,
+    description: "Advanced tools for dedicated fitness enthusiasts.",
     features: [
-      { text: "Limited AI Workout Plans", icon: ListChecks },
-      { text: "Basic Form Check (1 video/week)", icon: Video },
-      { text: "Community Access", icon: Users },
+      { text: "Unlimited AI Workout Plans", icon: ListChecks },
+      { text: "Advanced Form Check (10 videos/month)", icon: Video },
+      { text: "Adaptive Workout Adjustments", icon: Repeat },
+      { text: "Full Access to Community Challenges", icon: Users },
+      { text: "Detailed Progress Tracking & Analytics", icon: Zap },
     ],
-    cta: "Get Started",
-    link: "/signup",
+    cta: "Choose Premium",
+    link: "/subscribe?plan=premium",
     highlight: false,
     variant: "outline",
   },
   {
-    name: "FlexFit Pro", // Updated Plan Name
-    price: "$9.99",
+    name: "Platinum",
+    price: "$24.99",
     priceSuffix: "/ month",
-    priceNumeric: 9.99,
-    description: "Unlock advanced AI features and personalized training.",
+    priceNumeric: 24.99,
+    description: "The most popular choice for peak performance and support.",
     features: [
-      { text: "Unlimited AI Workout Plans", icon: ListChecks },
-      { text: "Advanced Form Check & Feedback", icon: Video },
-      { text: "Adaptive Workout Adjustments", icon: Repeat },
-      { text: "Full Access to Challenges", icon: Users },
-      { text: "Detailed Progress Tracking", icon: Zap },
+      { text: "All Premium Features Included", icon: CheckCircle },
+      { text: "Unlimited Advanced Form Checks", icon: Video },
+      { text: "Personalized AI Coaching Insights", icon: Sparkles },
+      { text: "Priority Email Support", icon: LifeBuoy },
+      { text: "Monthly Progress Review Call (15 min)", icon: Star },
     ],
-    cta: "Choose Pro",
-    link: "/subscribe?plan=pro", // Placeholder link
+    cta: "Choose Platinum",
+    link: "/subscribe?plan=platinum",
     highlight: true,
     variant: "default",
   },
   {
-    name: "FlexFit Elite", // Updated Plan Name
-    price: "$19.99",
+    name: "Diamond",
+    price: "$39.99",
     priceSuffix: "/ month",
-    priceNumeric: 19.99,
-    description: "The ultimate AI fitness experience with premium support.",
+    priceNumeric: 39.99,
+    description: "The ultimate, all-inclusive fitness experience.",
     features: [
-      { text: "All Pro Features Included", icon: CheckCircle },
-      { text: "Personalized AI Coaching Insights", icon: Sparkles },
-      { text: "Priority Email Support", icon: LifeBuoy },
-      { text: "Early Access to New Features", icon: Zap },
+      { text: "All Platinum Features Included", icon: CheckCircle },
+      { text: "Dedicated AI Coach Access", icon: Gem },
+      { text: "24/7 Priority Support (Chat & Email)", icon: ShieldCheck },
+      { text: "Early Access to New Features & Beta Programs", icon: Zap },
+      { text: "Custom Nutrition Plan Guidance", icon: ListChecks }, // Re-using ListChecks for variety
     ],
-    cta: "Choose Elite",
-    link: "/subscribe?plan=elite", // Placeholder link
+    cta: "Choose Diamond",
+    link: "/subscribe?plan=diamond",
     highlight: false,
     variant: "outline",
   },
@@ -83,10 +87,10 @@ export default function PricingPage() {
       <header className="text-center mb-12 md:mb-16">
         <DollarSign className="mx-auto h-14 w-14 text-primary mb-4" />
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-          Find the Perfect Plan
+          Find Your Perfect Fit
         </h1>
         <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground md:text-xl">
-          Simple, transparent pricing. Elevate your fitness journey with FlexFit AI today.
+          Unlock your potential with FlexFit AI. Choose a plan tailored to your fitness journey.
         </p>
       </header>
 
@@ -108,7 +112,6 @@ export default function PricingPage() {
               <div className="mb-6 text-center">
                 <span className="text-5xl font-extrabold">{plan.price}</span>
                 {plan.priceSuffix && <span className="text-muted-foreground text-base">{plan.priceSuffix}</span>}
-                {plan.priceNumeric === 0 && <span className="block text-base text-muted-foreground mt-1">Always free</span>}
               </div>
               <ul className="space-y-4">
                 {plan.features.map((feature, index) => (

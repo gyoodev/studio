@@ -13,19 +13,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, UserPlus } from 'lucide-react';
+import { Loader2, UserPlus, AlertCircle } from 'lucide-react'; // Added AlertCircle
 
 const formSchema = z.object({
-  displayName: z.string().min(2, "Display name must be at least 2 characters.").max(50).optional(),
-  email: z.string().email("Invalid email address."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
+  displayName: z.string().min(2, "Display name must be at least 2 characters.").max(50).optional().or(z.literal('')), // Allow empty string
+  email: z.string().email("Invalid email address. Please enter a valid email.").min(1, "Email is required."),
+  password: z.string().min(6, "Password must be at least 6 characters.").min(1, "Password is required."),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { signUpWithEmail, error: authErrorFromContext } = useAuth(); // Renamed to avoid conflict
+  const { signUpWithEmail, error: authError } = useAuth(); // Renamed context error
   const router = useRouter();
   const { toast } = useToast();
 
@@ -40,7 +40,7 @@ export default function SignupPage() {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
-    const user = await signUpWithEmail(data.email, data.password, data.displayName);
+    const user = await signUpWithEmail(data.email, data.password, data.displayName || undefined); // Pass undefined if display name is empty
     setIsLoading(false);
     if (user) {
       toast({
@@ -51,17 +51,17 @@ export default function SignupPage() {
     } else {
       toast({
         title: "Signup Failed",
-        description: authErrorFromContext || "An error occurred. Please try again.",
+        description: authError || "An error occurred. Please try again.",
         variant: "destructive",
       });
     }
   };
 
   return (
-    <Card className="w-full shadow-xl">
+    <Card className="w-full shadow-xl border-border">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Create Your FlexFit AI Account</CardTitle>
-        <CardDescription className="text-center">Join us to get personalized fitness plans and track your progress.</CardDescription>
+        <CardTitle className="text-2xl font-bold text-center text-foreground">Create Your FlexFit AI Account</CardTitle>
+        <CardDescription className="text-center text-muted-foreground">Join us to get personalized fitness plans and track your progress.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -71,9 +71,13 @@ export default function SignupPage() {
               name="displayName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Display Name (Optional)</FormLabel>
+                  <FormLabel className="text-foreground/80">Display Name (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your Name" {...field} />
+                    <Input 
+                      placeholder="Your Name" 
+                      {...field} 
+                      className="bg-input text-foreground placeholder:text-muted-foreground/70"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -84,9 +88,14 @@ export default function SignupPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-foreground/80">Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="you@example.com" {...field} />
+                    <Input 
+                      type="email" 
+                      placeholder="you@example.com" 
+                      {...field} 
+                      className="bg-input text-foreground placeholder:text-muted-foreground/70"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -97,14 +106,25 @@ export default function SignupPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-foreground/80">Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input 
+                      type="password" 
+                      placeholder="••••••••" 
+                      {...field} 
+                      className="bg-input text-foreground placeholder:text-muted-foreground/70"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            {authError && (
+              <div className="flex items-center p-3 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md">
+                <AlertCircle className="mr-2 h-5 w-5" />
+                <span>{authError}</span>
+              </div>
+            )}
             <Button type="submit" disabled={isLoading} className="w-full shadow-md">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserPlus className="mr-2 h-4 w-4" />}
               Sign Up
@@ -112,10 +132,10 @@ export default function SignupPage() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex flex-col items-center space-y-2">
+      <CardFooter className="flex flex-col items-center space-y-2 pt-6">
         <p className="text-sm text-muted-foreground">
           Already have an account?{' '}
-          <Button variant="link" asChild className="p-0 h-auto">
+          <Button variant="link" asChild className="p-0 h-auto text-primary hover:text-accent">
             <Link href="/login">Log in</Link>
           </Button>
         </p>

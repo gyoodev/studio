@@ -13,18 +13,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, LogIn } from 'lucide-react';
+import { Loader2, LogIn, AlertCircle } from 'lucide-react'; // Added AlertCircle for error emphasis
 
 const formSchema = z.object({
-  email: z.string().email("Invalid email address."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
+  email: z.string().email("Invalid email address. Please enter a valid email.").min(1, "Email is required."),
+  password: z.string().min(6, "Password must be at least 6 characters.").min(1, "Password is required."),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { signInWithEmail, error: authErrorFromContext } = useAuth(); // Renamed to avoid conflict
+  const { signInWithEmail, error: authError } = useAuth(); // Renamed context error
   const router = useRouter();
   const { toast } = useToast();
 
@@ -49,17 +49,17 @@ export default function LoginPage() {
     } else {
       toast({
         title: "Login Failed",
-        description: authErrorFromContext || "Please check your credentials and try again.",
+        description: authError || "Please check your credentials and try again.",
         variant: "destructive",
       });
     }
   };
 
   return (
-    <Card className="w-full shadow-xl">
+    <Card className="w-full shadow-xl border-border">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Log In to FlexFit AI</CardTitle>
-        <CardDescription className="text-center">Enter your credentials to access your account.</CardDescription>
+        <CardTitle className="text-2xl font-bold text-center text-foreground">Log In to FlexFit AI</CardTitle>
+        <CardDescription className="text-center text-muted-foreground">Enter your credentials to access your account.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -69,9 +69,14 @@ export default function LoginPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-foreground/80">Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="you@example.com" {...field} />
+                    <Input 
+                      type="email" 
+                      placeholder="you@example.com" 
+                      {...field} 
+                      className="bg-input text-foreground placeholder:text-muted-foreground/70"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -82,14 +87,25 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-foreground/80">Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input 
+                      type="password" 
+                      placeholder="••••••••" 
+                      {...field} 
+                      className="bg-input text-foreground placeholder:text-muted-foreground/70"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            {authError && (
+              <div className="flex items-center p-3 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md">
+                <AlertCircle className="mr-2 h-5 w-5" />
+                <span>{authError}</span>
+              </div>
+            )}
             <Button type="submit" disabled={isLoading} className="w-full shadow-md">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
               Log In
@@ -97,10 +113,10 @@ export default function LoginPage() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex flex-col items-center space-y-2">
+      <CardFooter className="flex flex-col items-center space-y-2 pt-6">
         <p className="text-sm text-muted-foreground">
           Don&apos;t have an account?{' '}
-          <Button variant="link" asChild className="p-0 h-auto">
+          <Button variant="link" asChild className="p-0 h-auto text-primary hover:text-accent">
             <Link href="/signup">Sign up</Link>
           </Button>
         </p>

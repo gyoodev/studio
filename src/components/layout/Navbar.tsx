@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { FlexAIFitLogo } from '@/components/icons/FlexAIFitLogo';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Dumbbell } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'; // Added SheetTitle
+import { Menu } from 'lucide-react';
 
 const navItems = [
   { href: '/generate-plan', label: 'Generate Plan' },
@@ -40,6 +40,7 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <nav className="flex flex-col space-y-4 mt-8">
               <Link href="/" className="mr-6 flex items-center space-x-2 mb-4">
                 <FlexAIFitLogo className="h-8 w-auto" />

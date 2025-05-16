@@ -1,12 +1,12 @@
 
-"use client"; // Required for useAuth hook and Sheet interactions
+"use client"; 
 
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { FlexFitAILogo } from '@/components/icons/FlexFitAILogo';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose, SheetHeader } from '@/components/ui/sheet'; // SheetHeader added
-import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign } from 'lucide-react'; // Added DollarSign
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose, SheetHeader } from '@/components/ui/sheet';
+import { Menu, LogOut, UserCircle, LogIn, UserPlus, DollarSign } from 'lucide-react'; 
 import { useAuth } from '@/context/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from '@/lib/utils';
@@ -64,13 +64,13 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[320px] flex flex-col p-0">
               <SheetHeader className="p-4 border-b">
-                <SheetTitle> {/* Added SheetTitle for accessibility */}
+                <SheetTitle> 
                   <SheetClose asChild>
                     <Link href="/" className="flex items-center space-x-2">
                        <FlexFitAILogo className="h-7 w-auto" />
                     </Link>
                   </SheetClose>
-                  <span className="sr-only">Main Menu</span> {/* For screen readers, as title is now the logo */}
+                  <span className="sr-only">Main Menu</span> 
                 </SheetTitle>
               </SheetHeader>
               

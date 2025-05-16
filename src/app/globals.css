@@ -95,3 +95,23 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @keyframes dumbbell-lift {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    25% {
+      transform: translateY(-10px) rotate(-12deg);
+    }
+    50% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    75% {
+      transform: translateY(-10px) rotate(12deg);
+    }
+  }
+  .animate-dumbbell-lift {
+    animation: dumbbell-lift 1.5s ease-in-out infinite;
+  }
+}

@@ -14,7 +14,8 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, updateDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { Loader2 } from 'lucide-react';
+// import { Loader2 } from 'lucide-react'; // No longer needed here
+import { Preloader } from '@/components/layout/Preloader'; // Import new Preloader
 
 interface UserProfile extends User {
   displayName?: string | null;
@@ -48,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentPathname, setCurrentPathname] = useState('');
 
   const fetchUserProfile = async (firebaseUser: User, forceRefresh: boolean = false): Promise<UserProfile | null> => {
-    if (!firebaseUser && !forceRefresh) return null; // Added !forceRefresh condition for direct calls
+    if (!firebaseUser && !forceRefresh) return null;
     
     const targetUser = forceRefresh && auth.currentUser ? auth.currentUser : firebaseUser;
     if (!targetUser) {
@@ -59,24 +60,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const userDocRef = doc(db, 'users', targetUser.uid);
-      const userDocSnap = await getDoc(userDocRef);
+      let userDocSnap = await getDoc(userDocRef); // Use let to allow re-assignment
       
       let existingData = userDocSnap.exists() ? userDocSnap.data() : {};
       
-      // Check for subscription expiry
       if (existingData?.subscriptionStatus === "active" && existingData?.subscriptionExpiryDate) {
         const expiryDate = (existingData.subscriptionExpiryDate as Timestamp).toDate();
         if (expiryDate < new Date()) {
-          // Subscription has expired
           const expiredSubUpdate = {
             subscriptionPlan: "free",
             subscriptionStatus: "inactive",
-            // Optionally, keep expiry date for record or nullify
-            // subscriptionExpiryDate: null, 
-            // subscriptionBuyDate: null,
           };
           await updateDoc(userDocRef, expiredSubUpdate);
-          existingData = { ...existingData, ...expiredSubUpdate }; // Reflect update in current data
+          existingData = { ...existingData, ...expiredSubUpdate };
+          // Optionally re-fetch snapshot if other operations depend on the absolute latest
+          // userDocSnap = await getDoc(userDocRef); 
+          // existingData = userDocSnap.exists() ? userDocSnap.data() : {};
         }
       }
       
@@ -90,24 +89,44 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         subscriptionStatus: existingData?.subscriptionStatus || "inactive",
         subscriptionBuyDate: existingData?.subscriptionBuyDate || null,
         subscriptionExpiryDate: existingData?.subscriptionExpiryDate || null,
-        createdAt: existingData?.createdAt || serverTimestamp(), // Ensure createdAt is preserved or set
       };
-
-      if (userDocSnap.exists()) {
-        // Update lastLogin and potentially other auth-derived fields if they changed
+      
+      if (!userDocSnap.exists()) { // Check if doc existed initially before potential expiry update
+        profileDataToSet.createdAt = serverTimestamp(); // Set createdAt only for new users
+        await setDoc(userDocRef, profileDataToSet, { merge: true }); // Use merge: true for safety
+      } else {
+        // For existing users, update relevant fields
         await updateDoc(userDocRef, {
            lastLogin: serverTimestamp(),
-           displayName: profileDataToSet.displayName, // Ensure display name from auth provider is updated
-           photoURL: profileDataToSet.photoURL, // Ensure photo URL from auth provider is updated
-           email: profileDataToSet.email, // Ensure email is up-to-date
+           displayName: profileDataToSet.displayName, 
+           photoURL: profileDataToSet.photoURL, 
+           email: profileDataToSet.email,
+           // Only update subscription fields if they were part of an explicit update (like expiry)
+           // This prevents overwriting valid subscription data if only displayName/photoURL changed via auth provider
+           ...(existingData.subscriptionPlan !== profileDataToSet.subscriptionPlan && { subscriptionPlan: profileDataToSet.subscriptionPlan }),
+           ...(existingData.subscriptionStatus !== profileDataToSet.subscriptionStatus && { subscriptionStatus: profileDataToSet.subscriptionStatus }),
         });
-      } else {
-        await setDoc(userDocRef, profileDataToSet); // profileDataToSet already includes createdAt for new users
       }
+      
+      // Get the possibly updated snapshot again to ensure `createdAt` is correct for new users
+      const finalUserDocSnap = await getDoc(userDocRef);
+      const finalExistingData = finalUserDocSnap.exists() ? finalUserDocSnap.data() : {};
 
-      const updatedProfile = { ...targetUser, ...existingData, ...profileDataToSet } as UserProfile; // Ensure existingData takes precedence for subscription after check
-      setUser(updatedProfile);
-      return updatedProfile;
+      const fullUserProfile = { 
+        ...targetUser, // Base Firebase User properties
+        ...(finalExistingData as Omit<UserProfile, keyof User>), // Firestore data (typed)
+        // Explicitly ensure values from profileDataToSet are prioritized if they were calculated/updated
+        displayName: profileDataToSet.displayName,
+        photoURL: profileDataToSet.photoURL,
+        email: profileDataToSet.email,
+        subscriptionPlan: profileDataToSet.subscriptionPlan,
+        subscriptionStatus: profileDataToSet.subscriptionStatus,
+        subscriptionBuyDate: profileDataToSet.subscriptionBuyDate,
+        subscriptionExpiryDate: profileDataToSet.subscriptionExpiryDate,
+      } as UserProfile;
+
+      setUser(fullUserProfile);
+      return fullUserProfile;
     } catch (e) {
       console.error("Error fetching/updating user profile in Firestore:", e);
       setError((e as Error).message);
@@ -118,18 +137,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         subscriptionPlan: "free",
         subscriptionStatus: "inactive",
       } as UserProfile;
-      setUser(fallbackProfile);
+      setUser(fallbackProfile); // Set a basic profile even on error
       return fallbackProfile;
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setCurrentPathname(window.location.pathname);
     }
-    setClientSideCheckComplete(true); // Moved here to ensure it's set regardless of window
+    setClientSideCheckComplete(true); 
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -196,7 +215,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const firebaseUser = result.user;
-      // fetchUserProfile will handle creating/updating Firestore doc
       return await fetchUserProfile(firebaseUser); 
     } catch (e) {
       setError((e as Error).message);
@@ -220,12 +238,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const showGlobalLoader = clientSideCheckComplete && loading && currentPathname !== '/login' && currentPathname !== '/signup';
 
   if (showGlobalLoader) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
+    return <Preloader />; // Use the new Preloader component
   }
+
   return (
     <AuthContext.Provider value={{ user, loading, error, signUpWithEmail, signInWithEmail, signInWithGoogle, logout, fetchUserProfile }}>
       {children}
@@ -240,4 +255,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-

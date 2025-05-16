@@ -69,12 +69,13 @@ export default function FormCheckPage() {
       toast({
         title: "Form Analysis Complete!",
         description: "Check your feedback below.",
+        variant: "success", // Changed to success
       });
     } catch (error) {
       console.error("Error analyzing form:", error);
       toast({
-        title: "Error",
-        description: "Failed to analyze form. Ensure the video is clear and shows the full exercise. Supported video formats are usually MP4, MOV, WebM.",
+        title: "Error Analyzing Form", // Made title more specific
+        description: (error as Error).message || "Failed to analyze form. Ensure the video is clear and shows the full exercise. Supported video formats are usually MP4, MOV, WebM.",
         variant: "destructive",
       });
     }

@@ -6,7 +6,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation'; // Added useSearchParams
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -14,7 +14,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, LogIn, AlertCircle, Chrome } from 'lucide-react'; 
-import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address. Please enter a valid email.").min(1, "Email is required."),
@@ -28,6 +27,7 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { signInWithEmail, signInWithGoogle, error: authError } = useAuth(); 
   const router = useRouter();
+  const searchParams = useSearchParams(); // Added
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -46,10 +46,11 @@ export default function LoginPage() {
       toast({
         title: "Login Successful",
         description: `Welcome back, ${user.displayName || user.email}!`,
+        variant: "success", // Changed to success
       });
-      router.push('/'); 
+      const redirectUrl = searchParams.get('redirect'); // Added
+      router.push(redirectUrl || '/'); // Added redirect logic
     } else {
-      // authError from context will be displayed below the form
       toast({
         title: "Login Failed",
         description: authError || "Please check your credentials and try again.",
@@ -66,8 +67,10 @@ export default function LoginPage() {
       toast({
         title: "Google Sign-In Successful",
         description: `Welcome, ${user.displayName || user.email}!`,
+        variant: "success", // Changed to success
       });
-      router.push('/');
+      const redirectUrl = searchParams.get('redirect'); // Added
+      router.push(redirectUrl || '/'); // Added redirect logic
     } else {
       toast({
         title: "Google Sign-In Failed",
@@ -122,7 +125,7 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-            {authError && (
+            {authError && !form.formState.isSubmitSuccessful && ( // Show authError only if submission wasn't successful yet
               <div className="flex items-center p-3 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md">
                 <AlertCircle className="mr-2 h-5 w-5" />
                 <span>{authError}</span>

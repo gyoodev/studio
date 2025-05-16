@@ -46,12 +46,13 @@ export default function GeneratePlanPage() {
       toast({
         title: "Workout Plan Generated!",
         description: "Your personalized workout plan is ready.",
+        variant: "success", // Changed to success
       });
     } catch (error) {
       console.error("Error generating workout plan:", error);
       toast({
-        title: "Error",
-        description: "Failed to generate workout plan. Please try again.",
+        title: "Error Generating Plan", // Made title more specific
+        description: (error as Error).message || "Failed to generate workout plan. Please try again.",
         variant: "destructive",
       });
     }

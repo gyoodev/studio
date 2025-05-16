@@ -54,8 +54,7 @@ function SubscribePageContent() {
       toast({
         title: "Subscription Activated (Mock)",
         description: `Your ${planDetails?.name} has been activated using ${method}!`,
-        variant: "default",
-        className: "bg-green-100 border-green-300 text-green-700 dark:bg-green-900 dark:border-green-700 dark:text-green-300",
+        variant: "success", // Changed to success (custom styling was there, but let's use variant)
       });
        // In a real app, you'd update user's subscription status in DB here.
       setIsProcessingPayment(false);

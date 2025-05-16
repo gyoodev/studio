@@ -74,12 +74,13 @@ export default function AdaptPlanPage() {
       toast({
         title: "Workout Plan Adapted!",
         description: "Your workout plan has been updated based on your progress.",
+        variant: "success", // Changed to success
       });
     } catch (error) {
       console.error("Error adapting workout plan:", error);
       toast({
-        title: "Error",
-        description: "Failed to adapt workout plan. Please try again.",
+        title: "Error Adapting Plan", // Made title more specific
+        description: (error as Error).message || "Failed to adapt workout plan. Please try again.",
         variant: "destructive",
       });
     }

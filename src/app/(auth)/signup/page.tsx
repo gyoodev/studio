@@ -6,7 +6,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation'; // Added useSearchParams
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -14,7 +14,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, UserPlus, AlertCircle, Chrome } from 'lucide-react'; 
-import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   displayName: z.string().min(2, "Display name must be at least 2 characters.").max(50).optional().or(z.literal('')),
@@ -29,6 +28,7 @@ export default function SignupPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { signUpWithEmail, signInWithGoogle, error: authError } = useAuth(); 
   const router = useRouter();
+  const searchParams = useSearchParams(); // Added
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -48,10 +48,11 @@ export default function SignupPage() {
       toast({
         title: "Signup Successful!",
         description: `Welcome to FlexFit AI, ${user.displayName || user.email}!`,
+        variant: "success", // Changed to success
       });
-      router.push('/'); 
+      const redirectUrl = searchParams.get('redirect'); // Added
+      router.push(redirectUrl || '/'); // Added redirect logic
     } else {
-      // authError from context will be displayed
       toast({
         title: "Signup Failed",
         description: authError || "An error occurred. Please try again.",
@@ -62,14 +63,16 @@ export default function SignupPage() {
 
   const handleGoogleSignUp = async () => {
     setIsGoogleLoading(true);
-    const user = await signInWithGoogle(); // Same function for sign-in/sign-up
+    const user = await signInWithGoogle(); 
     setIsGoogleLoading(false);
     if (user) {
       toast({
         title: "Google Sign-Up Successful!",
         description: `Welcome to FlexFit AI, ${user.displayName || user.email}!`,
+        variant: "success", // Changed to success
       });
-      router.push('/');
+      const redirectUrl = searchParams.get('redirect'); // Added
+      router.push(redirectUrl || '/'); // Added redirect logic
     } else {
        toast({
         title: "Google Sign-Up Failed",
@@ -141,7 +144,7 @@ export default function SignupPage() {
                 </FormItem>
               )}
             />
-            {authError && (
+            {authError && !form.formState.isSubmitSuccessful && ( // Show authError only if submission wasn't successful
               <div className="flex items-center p-3 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md">
                 <AlertCircle className="mr-2 h-5 w-5" />
                 <span>{authError}</span>
@@ -187,4 +190,3 @@ export default function SignupPage() {
     </Card>
   );
 }
-

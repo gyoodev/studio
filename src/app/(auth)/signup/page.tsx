@@ -25,7 +25,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { signUpWithEmail, error: authError } = useAuth();
+  const { signUpWithEmail, error: authErrorFromContext } = useAuth(); // Renamed to avoid conflict
   const router = useRouter();
   const { toast } = useToast();
 
@@ -51,7 +51,7 @@ export default function SignupPage() {
     } else {
       toast({
         title: "Signup Failed",
-        description: authError || "An error occurred. Please try again.",
+        description: authErrorFromContext || "An error occurred. Please try again.",
         variant: "destructive",
       });
     }

@@ -24,7 +24,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { signInWithEmail, error: authError } = useAuth();
+  const { signInWithEmail, error: authErrorFromContext } = useAuth(); // Renamed to avoid conflict
   const router = useRouter();
   const { toast } = useToast();
 
@@ -49,7 +49,7 @@ export default function LoginPage() {
     } else {
       toast({
         title: "Login Failed",
-        description: authError || "Please check your credentials and try again.",
+        description: authErrorFromContext || "Please check your credentials and try again.",
         variant: "destructive",
       });
     }

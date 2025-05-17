@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 toml
 [build]
 command = "next build"
@@ -15,3 +16,21 @@ publish = ".next"
 #   from = "/*"
 #   to = "/index.html"
 #   status = 200
+=======
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+
+[build.environment]
+  NODE_VERSION = "18"
+
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+>>>>>>> 4b7558e9dd4b2723dfe529d0094a139fc30828e6

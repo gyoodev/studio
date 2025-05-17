@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { ReactNode } from 'react';
@@ -25,6 +24,7 @@ interface UserProfile extends User {
   subscriptionStatus?: "active" | "inactive" | "cancelled" | "past_due";
   subscriptionBuyDate?: Timestamp | Date | null;
   subscriptionExpiryDate?: Timestamp | Date | null;
+  role?: "admin" | "user" | string; // Added role property
 }
 
 interface AuthContextType {
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
         return null;
     }
-    
+
     const targetUser = forceRefresh && auth?.currentUser ? auth.currentUser : firebaseUser;
     if (!targetUser) {
         setLoading(false);
@@ -115,6 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         subscriptionStatus: existingData?.subscriptionStatus || "inactive",
         subscriptionBuyDate: existingData?.subscriptionBuyDate || null,
         subscriptionExpiryDate: existingData?.subscriptionExpiryDate || null,
+        role: existingData?.role || "user", // Added role property with a default of "user"
       };
 
       const updateData: Record<string, any> = {
@@ -128,6 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         updateData.createdAt = serverTimestamp();
         updateData.subscriptionPlan = "free";
         updateData.subscriptionStatus = "inactive";
+        updateData.role = "user"; // Set default role on creation
         await setDoc(userDocRef, updateData);
       } else {
         // Only update subscription fields if they were explicitly part of an update (like expiry)
@@ -137,9 +139,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (existingData.subscriptionStatus !== profileDataToSet.subscriptionStatus) {
             updateData.subscriptionStatus = profileDataToSet.subscriptionStatus;
         }
+        // Only update role if it's not already set (to avoid overwriting admin role)
+        if (existingData.role === undefined || existingData.role === null) {
+            updateData.role = profileDataToSet.role;
+        }
         await updateDoc(userDocRef, updateData);
       }
-      
+
       const finalUserDocSnap = await getDoc(userDocRef);
       const finalDatabaseData = finalUserDocSnap.exists() ? finalUserDocSnap.data() : {};
 
@@ -147,13 +153,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         ...targetUser, // Raw Firebase User (uid, email, photoURL, displayName from provider)
         ...(finalDatabaseData as Omit<UserProfile, keyof User>), // Firestore data
         // Ensure latest auth provider info (from targetUser) and calculated/default values are prioritized
-        displayName: profileDataToSet.displayName, 
+        displayName: profileDataToSet.displayName,
         photoURL: profileDataToSet.photoURL,
         email: profileDataToSet.email,
         subscriptionPlan: profileDataToSet.subscriptionPlan,
         subscriptionStatus: profileDataToSet.subscriptionStatus,
         subscriptionBuyDate: profileDataToSet.subscriptionBuyDate,
         subscriptionExpiryDate: profileDataToSet.subscriptionExpiryDate,
+        role: finalDatabaseData?.role || "user", // Ensure the role from the final database data is used
       } as UserProfile;
 
       setUser(fullUserProfile);
@@ -167,6 +174,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         photoURL: targetUser.photoURL || null,
         subscriptionPlan: "free",
         subscriptionStatus: "inactive",
+        role: "user", // Default role in fallback
       } as UserProfile;
       setUser(fallbackProfile);
       return fallbackProfile;
@@ -186,7 +194,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
-      
+
       const userProfileData: Partial<UserProfile> = {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
@@ -198,10 +206,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         subscriptionStatus: "inactive",
         subscriptionBuyDate: null,
         subscriptionExpiryDate: null,
+        role: "user", // Set default role on sign up
       };
       await setDoc(doc(db, 'users', firebaseUser.uid), userProfileData);
-      
-      // Fetch the complete profile to ensure all fields (like Timestamps) are correctly hydrated
+
+      // Fetch the complete profile to ensure all fields (like Timestamps, including role) are correctly hydrated
       return await fetchUserProfile(firebaseUser);
     } catch (e) {
       setError((e as Error).message);
@@ -265,7 +274,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setLoading(false);
   };
-  
+
   const showGlobalLoader = (!firebaseAvailable && loading) || (firebaseAvailable && loading && !clientSideCheckComplete && currentPathname !== '/login' && currentPathname !== '/signup');
 
   if (showGlobalLoader) {

@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-toml
-[build]
-command = "next build"
-publish = ".next"
-
-# If you have Netlify Functions in a specific directory, uncomment and set the path
-# functions = "netlify/functions"
-
-# Example of setting environment variables directly in netlify.toml (less secure for secrets)
-# [build.environment]
-# MY_VARIABLE = "my_value"
-
-# Example of redirects for client-side routing (if needed)
-# [[redirects]]
-#   from = "/*"
-#   to = "/index.html"
-#   status = 200
-=======
 [build]
   command = "npm run build"
   publish = ".next"
@@ -26,11 +7,10 @@ publish = ".next"
 
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "22"
 
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
->>>>>>> 4b7558e9dd4b2723dfe529d0094a139fc30828e6

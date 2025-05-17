@@ -1,31 +1,16 @@
-toml
 [build]
-command = "next build"
-publish = ".next"
+  command = "npm run build"
+  publish = ".next"
 
-# If you have Netlify Functions in a specific directory, uncomment and set the path
-# functions = "netlify/functions"
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
-# Example of setting environment variables directly in netlify.toml (less secure for secrets)
+
 [build.environment]
-  CI = "1"
-  NPM_FLAGS = "--no-optional"
-# MY_VARIABLE = "my_value"
+  NODE_VERSION = "18"
 
-# Example of redirects for client-side routing (if needed)
-# [[redirects]]
-#   from = "/*"
-#   to = "/index.html"
-#   status = 200
 
-# Production context: all deploys from the Production branch
-# set in your site’s Branches settings in the UI will inherit
-# these settings.
-[context.production]
-  publish = "output/"
-  command = "make publish"
-
-# Deploy Preview context: all deploys generated from
-# a pull/merge request will inherit these settings.
-[context.deploy-preview]
-  publish = "dist/"
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

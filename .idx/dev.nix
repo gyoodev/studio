@@ -13,13 +13,10 @@
         command = [
           "npm"
           "run"
-          "start"
-          "--"
-          "--port"
-          "$PORT"
-          "--host"
-          "0.0.0.0"
-          "--disable-host-check"
+          "start" # This script in package.json is 'next start --port 9002'
+          "--" # Separator for npm to pass subsequent args to the script
+          "--port" # Next.js argument for port
+          "$PORT"  # $PORT is provided by the environment
         ];
         manager = "web";
         # Optionally, specify a directory that contains your web app

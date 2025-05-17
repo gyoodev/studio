@@ -86,7 +86,7 @@ const plans: Plan[] = [
 
 export default function PricingPage() {
   return (
-    <motion.div // Wrap the main div with motion
+    <motion.div
       className="container py-12 md:py-20"
       initial={{ opacity: 0 }} // Initial state: invisible
       animate={{ opacity: 1 }} // Animate to visible

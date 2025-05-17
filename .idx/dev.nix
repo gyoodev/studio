@@ -13,14 +13,12 @@
         command = [
           "npm"
           "run"
-          "start" # This script in package.json is 'next start --port 9002'
-          "--" # Separator for npm to pass subsequent args to the script
-          "--port" # Next.js argument for port
-          "$PORT"  # $PORT is provided by the environment
+          "dev" # Changed from "start" to "dev"
+          "--"  # Separator for npm script arguments
+          "-p"  # Next.js dev server port flag
+          "$PORT" # Port provided by Firebase Studio
         ];
         manager = "web";
-        # Optionally, specify a directory that contains your web app
-        # cwd = "app/client";
       };
       # The following object sets Android previews
       # Note that this is supported only on Flutter workspaces

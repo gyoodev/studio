@@ -1,6 +1,7 @@
 
 "use client";
 
+import { motion } from "framer-motion"; // Import motion
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { CheckCircle, Sparkles, Users, Video, ListChecks, Repeat, LifeBuoy, DollarSign, Zap, Gem, ShieldCheck, Star, ClipboardList, Salad, Apple } from "lucide-react"; // Added ClipboardList, Salad, Apple
@@ -85,10 +86,16 @@ const plans: Plan[] = [
 
 export default function PricingPage() {
   return (
-    <div className="container py-12 md:py-20">
+    <motion.div // Wrap the main div with motion
+      className="container py-12 md:py-20"
+      initial={{ opacity: 0 }} // Initial state: invisible
+      animate={{ opacity: 1 }} // Animate to visible
+      transition={{ duration: 0.8 }} // Animation duration
+    >
       <header className="text-center mb-12 md:mb-16">
         <DollarSign className="mx-auto h-14 w-14 text-primary mb-4" />
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+
           Find Your Perfect Fit
         </h1>
         <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground md:text-xl">
@@ -97,10 +104,16 @@ export default function PricingPage() {
       </header>
 
       <section className="grid lg:grid-cols-3 gap-8 items-stretch">
-        {plans.map((plan) => (
+        {plans.map((plan, index) => ( // Add index for staggered animation
           <Card
             key={plan.name}
-            className={`flex flex-col shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden ${
+            asChild // Use asChild to render motion.div as Card
+          >
+            <motion.div // Wrap each card with motion
+              initial={{ opacity: 0, y: 20 }} // Initial state: invisible and slightly down
+              animate={{ opacity: 1, y: 0 }} // Animate to visible and normal position
+              transition={{ duration: 0.5, delay: index * 0.1 }} // Staggered animation delay
+              className={`flex flex-col shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden p-4 md:p-6 ${ // Added padding classes
               plan.highlight ? "border-primary border-2 ring-4 ring-primary/20" : "border-border"
             }`}
           >
@@ -134,13 +147,19 @@ export default function PricingPage() {
                 <Link href={plan.link || "#"}>{plan.cta}</Link>
               </Button>
             </CardFooter>
+            </motion.div>
           </Card>
         ))}
       </section>
-      <footer className="mt-16 text-center text-muted-foreground text-sm">
+      <motion.footer // Wrap footer with motion
+        className="mt-16 text-center text-muted-foreground text-sm p-4 md:p-6 bg-muted/30 rounded-md" // Added padding and background
+        initial={{ opacity: 0, y: 20 }} // Initial state: invisible and slightly down
+        animate={{ opacity: 1, y: 0 }} // Animate to visible and normal position
+        transition={{ duration: 0.8, delay: plans.length * 0.1 + 0.2 }} // Delay after cards
+      >
         <p>All prices are in USD. Subscriptions can be managed or cancelled at any time from your profile.</p>
         <p>Have questions? <Link href="/contact" className="text-primary hover:underline">Contact Support</Link>.</p>
       </footer>
-    </div>
+    </motion.div> // Close the main motion.div
   );
 }

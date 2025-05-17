@@ -113,9 +113,9 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 20 }} // Initial state: invisible and slightly down
               animate={{ opacity: 1, y: 0 }} // Animate to visible and normal position
               transition={{ duration: 0.5, delay: index * 0.1 }} // Staggered animation delay
-              className={`flex flex-col shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden p-4 md:p-6 ${ // Added padding classes
+              className={`flex flex-col shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden p-4 md:p-6 ${
               plan.highlight ? "border-primary border-2 ring-4 ring-primary/20" : "border-border"
-            }`}
+              }`}
           >
             <CardHeader className={`pb-4 ${plan.highlight ? 'bg-primary/10' : ''}`}>
               <CardTitle className={`text-2xl font-semibold ${plan.highlight ? "text-primary" : ""}`}>

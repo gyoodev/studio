@@ -7,7 +7,9 @@ publish = ".next"
 # functions = "netlify/functions"
 
 # Example of setting environment variables directly in netlify.toml (less secure for secrets)
-# [build.environment]
+[build.environment]
+  CI = "1"
+  NPM_FLAGS = "--no-optional"
 # MY_VARIABLE = "my_value"
 
 # Example of redirects for client-side routing (if needed)

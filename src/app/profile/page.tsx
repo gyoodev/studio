@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
@@ -122,6 +121,39 @@ export default function ProfilePage() {
 
             <Separator className="my-6" />
 
+            {/* Activity and Achievements */}
+            <div>
+              <h3 className="text-xl font-semibold mb-3 text-foreground/90">Activity & Achievements</h3>
+              <div className="p-4 bg-card border rounded-lg shadow-sm space-y-3">
+                <div className="flex items-center space-x-3">
+                  <CalendarDays className="h-6 w-6 text-muted-foreground flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Last Active</p>
+                    {/* Placeholder - Replace with actual user data */}
+                    <p className="text-lg">N/A</p> 
+                  </div>
+                </div>
+                 <div className="flex items-start space-x-3">
+                  <Sparkles className="h-6 w-6 text-muted-foreground flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Badges</p>
+                    {/* Placeholder - Replace with actual user data */}
+                    <p className="text-lg">No badges yet</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Dumbbell className="h-6 w-6 text-muted-foreground flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Points from Challenges</p>
+                    {/* Placeholder - Replace with actual user data */}
+                    <p className="text-lg">0</p> 
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-6" />
+
             {/* Subscription Management */}
             <div>
               <h3 className="text-xl font-semibold mb-3 text-foreground/90">Subscription</h3>
@@ -155,7 +187,7 @@ export default function ProfilePage() {
                   </Link>
                 </Button>
               </div>
-            </div>
+             </div>
             
             <Separator className="my-6" />
 

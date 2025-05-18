@@ -1,6 +1,6 @@
 import React from 'react';
-    import AdminRoute from "@/components/auth/AdminRoute";
-
+import dynamic from 'next/dynamic';
+const AdminRoute = dynamic(() => import("@/components/auth/AdminRoute"), { ssr: false });
     const AdminUsersPage: React.FC = () => {
       return (
         <AdminRoute>

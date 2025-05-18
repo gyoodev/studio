@@ -83,9 +83,7 @@ const plans: Plan[] = [
 
 export default function PricingPage() {
   return (
-    <div
-      className="container py-12 md:py-20"
-    >
+    <div className="container py-12 md:py-20">
       <header className="text-center mb-12 md:mb-16">
         <DollarSign className="mx-auto h-14 w-14 text-primary mb-4" />
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
@@ -127,8 +125,8 @@ export default function PricingPage() {
                     <span className="text-sm">{feature.text}</span>
                   </li>
                 ))}\
-              </ul>
- </CardContent>
+              </ul>\
+ </CardContent>\
  <CardFooter className="mt-auto pt-6 pb-6 border-t bg-muted/30">
               <Button
                 asChild

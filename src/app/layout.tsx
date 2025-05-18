@@ -1,11 +1,14 @@
+
+"use client"; // Add this directive
+
 import type {Metadata} from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { appWithTranslation } from 'next-i18next'; // Updated import path
 import './globals.css';
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+// import LanguageSwitcher from "@/components/LanguageSwitcher"; // LanguageSwitcher might be better inside AppLayout or specific pages
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from '@/context/AuthContext'; // Added AuthProvider
-import { AppLayout } from '@/components/layout/AppLayout'; // Added AppLayout
+import { AuthProvider } from '@/context/AuthContext';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,7 +34,6 @@ export const metadata: Metadata = {
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
-          {/* LanguageSwitcher might be better inside AppLayout or specific pages if it needs client context not available here */}
           {/* <LanguageSwitcher /> */}
           <AppLayout>
             {children}

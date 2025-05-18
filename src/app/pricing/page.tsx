@@ -126,7 +126,7 @@ export default function PricingPage() {
                   </li>
                 ))}\
               </ul>
-            </CardContent>
+            </CardContent>\
             <CardFooter className="mt-auto pt-6 pb-6 border-t bg-muted/30">
               <Button
                 asChild
@@ -136,7 +136,7 @@ export default function PricingPage() {
               >
  <Link href={plan.link || "#"}>{plan.cta}</Link>
               </Button>
-            </CardFooter>
+            </CardFooter>\
             </motion.div>
           </Card>)}
       </section>
@@ -148,7 +148,7 @@ export default function PricingPage() {
       >
         <p>All prices are in USD. Subscriptions can be managed or cancelled at any time from your profile.</p>
         <p>Have questions? <Link href="/contact" className="text-primary hover:underline">Contact Support</Link>.</p>
-      </footer>
-    </motion.div> // Close the main motion.div
+      </footer>\
+    </div> // Close the main motion.div
  );
 }\

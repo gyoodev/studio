@@ -281,11 +281,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return <Preloader />;
   }
 
-  return (
-    <AuthContext.Provider value={{ user, loading, error, signUpWithEmail, signInWithEmail, signInWithGoogle, logout, fetchUserProfile }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  // Only render the provider on the client side
+  if (typeof window !== 'undefined') {
+    return (
+      <AuthContext.Provider value={{ user, loading, error, signUpWithEmail, signInWithEmail, signInWithGoogle, logout, fetchUserProfile }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  }
+  return null; // Return null or a loading indicator on the server
 };
 
 export const useAuth = (): AuthContextType => {

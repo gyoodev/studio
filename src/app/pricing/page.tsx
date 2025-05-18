@@ -121,9 +121,9 @@ export default function PricingPage() {
                     <feature.icon className="h-5 w-5 text-accent mr-3 mt-0.5 flex-shrink-0" />
                     <span className="text-sm">{feature.text}</span>
                   </li>
-                ))}\
+                ))}
               </ul>
-            </CardContent>\
+            </CardContent>
             <CardFooter className="mt-auto pt-6 pb-6 border-t bg-muted/30">
               <Button
                 asChild
@@ -141,7 +141,7 @@ export default function PricingPage() {
       >
         <p>All prices are in USD. Subscriptions can be managed or cancelled at any time from your profile.</p>
         <p>Have questions? <Link href="/contact" className="text-primary hover:underline">Contact Support</Link>.</p>
-      </footer>\
-    </div> // Close the main motion.div
+      </footer>
+    </div>
  );
 }\

@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { appWithTranslation } from 'next-i18next/dist/commonjs';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 const geistSans = Geist({
@@ -17,16 +18,18 @@ export const metadata: Metadata = {
   description: 'Your Personal AI Fitness Coach',
 };
 
-export default function RootLayout({
+ function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
   );
 }
+
+export default appWithTranslation(RootLayout);

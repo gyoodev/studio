@@ -91,6 +91,7 @@
   * {
     @apply border-border;
   }
+  /* Apply the background color and default text color to the body */
   body {
     @apply bg-background text-foreground;
   }

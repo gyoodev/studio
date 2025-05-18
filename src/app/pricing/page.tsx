@@ -1,5 +1,4 @@
 "use client";
-import { motion } from "motion/react"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { CheckCircle, Sparkles, Users, Video, ListChecks, Repeat, LifeBuoy, DollarSign, Zap, Gem, ShieldCheck, Star, ClipboardList, Salad, Apple } from "lucide-react"; // Added ClipboardList, Salad, Apple
@@ -99,12 +98,9 @@ export default function PricingPage() {
       <section className="grid lg:grid-cols-3 gap-8 items-stretch">
         {plans.map((plan, index) => ( // Add index for staggered animation
           <Card
-            key={plan.name}
-            asChild // Use asChild to render motion.div as Card
+            key={plan.name}            
           >
-            <div // Wrap each card with motion
-              transition={{ duration: 0.5, delay: index * 0.1 }} // Staggered animation delay
-              className={`flex flex-col shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden p-4 md:p-6 ${
+            <div className={`flex flex-col shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden p-4 md:p-6 ${
               plan.highlight ? "border-primary border-2 ring-4 ring-primary/20" : "border-border"
               }`}
           >
@@ -138,14 +134,10 @@ export default function PricingPage() {
  <Link href={plan.link || "#"}>{plan.cta}</Link>
               </Button>
             </CardFooter>\
-            </motion.div>
+            </div>
           </Card>)}
       </section>
-      <footer // Wrap footer with motion
-        className="mt-16 text-center text-muted-foreground text-sm p-4 md:p-6 bg-muted/30 rounded-md" // Added padding and background
-        initial={{ opacity: 0, y: 20 }} // Initial state: invisible and slightly down
-        animate={{ opacity: 1, y: 0 }} // Animate to visible and normal position
-        transition={{ duration: 0.8, delay: plans.length * 0.1 + 0.2 }} // Delay after cards
+      <footer className="mt-16 text-center text-muted-foreground text-sm p-4 md:p-6 bg-muted/30 rounded-md" // Added padding and background
       >
         <p>All prices are in USD. Subscriptions can be managed or cancelled at any time from your profile.</p>
         <p>Have questions? <Link href="/contact" className="text-primary hover:underline">Contact Support</Link>.</p>

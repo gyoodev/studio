@@ -19,7 +19,7 @@ interface Plan {
   features: Feature[];
   cta: string;
   link: string;
-  highlight: boolean;
+ highlight: boolean;
   variant?: "default" | "outline";
 }
 
@@ -35,7 +35,7 @@ const plans: Plan[] = [
       { text: "Advanced Form Check (10 videos/month)", icon: Video },
       { text: "Adaptive Workout Adjustments", icon: Repeat },
       { text: "Full Access to Community Challenges", icon: Users },
-      { text: "Basic Diet Plan Guidance", icon: ClipboardList }, // Added
+      { text: "Basic Diet Plan Guidance", icon: ClipboardList },
       { text: "Detailed Progress Tracking & Analytics", icon: Zap },
     ],
     cta: "Choose Premium",
@@ -52,7 +52,7 @@ const plans: Plan[] = [
     features: [
       { text: "All Premium Features Included", icon: CheckCircle },
       { text: "Unlimited Advanced Form Checks", icon: Video },
-      { text: "Personalized Diet Plan Suggestions", icon: Salad }, // Added
+      { text: "Personalized Diet Plan Suggestions", icon: Salad },
       { text: "Personalized AI Coaching Insights", icon: Sparkles },
       { text: "Priority Email Support", icon: LifeBuoy },
       { text: "Monthly Progress Review Call (15 min)", icon: Star },
@@ -70,7 +70,7 @@ const plans: Plan[] = [
     description: "The ultimate, all-inclusive fitness experience.",
     features: [
       { text: "All Platinum Features Included", icon: CheckCircle },
-      { text: "Custom Nutrition Plan Guidance", icon: Apple }, // Changed icon to Apple for variety
+      { text: "Custom Nutrition Plan Guidance", icon: Apple },
       { text: "Dedicated AI Coach Access", icon: Gem },
       { text: "24/7 Priority Support (Chat & Email)", icon: ShieldCheck },
       { text: "Early Access to New Features & Beta Programs", icon: Zap },
@@ -84,6 +84,7 @@ const plans: Plan[] = [
 
 export default function PricingPage() {
   return (
+    
     <div className="container py-12 md:py-20">
       <header className="text-center mb-12 md:mb-16">
         <DollarSign className="mx-auto h-14 w-14 text-primary mb-4" />
@@ -132,9 +133,7 @@ export default function PricingPage() {
                 variant={plan.variant}
                 size="lg"
               >
-                <React.Fragment>
-                  <Link href={plan.link || "#"}>{plan.cta}</Link>
-                </React.Fragment>
+                <Link href={plan.link || "#"}>{plan.cta}</Link>
               </Button>
             </CardFooter>
             </div>

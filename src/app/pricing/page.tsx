@@ -1,4 +1,5 @@
 "use client";
+import { motion } from "motion/react"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { CheckCircle, Sparkles, Users, Video, ListChecks, Repeat, LifeBuoy, DollarSign, Zap, Gem, ShieldCheck, Star, ClipboardList, Salad, Apple } from "lucide-react"; // Added ClipboardList, Salad, Apple

@@ -129,24 +129,21 @@ export default function ProfilePage() {
                   <CalendarDays className="h-6 w-6 text-muted-foreground flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Last Active</p>
-                    {/* Placeholder - Replace with actual user data */}
-                    <p className="text-lg">N/A</p> 
+ <p className="text-lg">{formatDate(user.lastActive)}</p>
                   </div>
                 </div>
                  <div className="flex items-start space-x-3">
                   <Sparkles className="h-6 w-6 text-muted-foreground flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Badges</p>
-                    {/* Placeholder - Replace with actual user data */}
-                    <p className="text-lg">No badges yet</p>
+ <p className="text-lg">{user.badges ? user.badges.join(', ') : 'None'}</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <Dumbbell className="h-6 w-6 text-muted-foreground flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Points from Challenges</p>
-                    {/* Placeholder - Replace with actual user data */}
-                    <p className="text-lg">0</p> 
+ <p className="text-lg">{user.points || 0}</p>
                   </div>
                 </div>
               </div>

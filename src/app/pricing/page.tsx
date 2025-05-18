@@ -1,5 +1,4 @@
 "use client";
-import { motion } from 'motion/react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { CheckCircle, Sparkles, Users, Video, ListChecks, Repeat, LifeBuoy, DollarSign, Zap, Gem, ShieldCheck, Star, ClipboardList, Salad, Apple } from "lucide-react"; // Added ClipboardList, Salad, Apple
@@ -84,11 +83,8 @@ const plans: Plan[] = [
 
 export default function PricingPage() {
   return (
-    <motion.div // This is line 86
+    <div
       className="container py-12 md:py-20"
-      initial={{ opacity: 0 }} // Initial state: invisible
-      animate={{ opacity: 1 }} // Animate to visible
-      transition={{ duration: 0.8 }} // Animation duration
     >
       <header className="text-center mb-12 md:mb-16">
         <DollarSign className="mx-auto h-14 w-14 text-primary mb-4" />
@@ -107,9 +103,7 @@ export default function PricingPage() {
             key={plan.name}
             asChild // Use asChild to render motion.div as Card
           >
-            <motion.div // Wrap each card with motion
-              initial={{ opacity: 0, y: 20 }} // Initial state: invisible and slightly down
-              animate={{ opacity: 1, y: 0 }} // Animate to visible and normal position
+            <div // Wrap each card with motion
               transition={{ duration: 0.5, delay: index * 0.1 }} // Staggered animation delay
               className={`flex flex-col shadow-lg hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden p-4 md:p-6 ${
               plan.highlight ? "border-primary border-2 ring-4 ring-primary/20" : "border-border"
@@ -146,10 +140,9 @@ export default function PricingPage() {
               </Button>
             </CardFooter>
             </motion.div>
-          </Card>
-        ))}\
+          </Card>)}
       </section>\
-      <motion.footer // Wrap footer with motion\
+      <footer // Wrap footer with motion\
         className="mt-16 text-center text-muted-foreground text-sm p-4 md:p-6 bg-muted/30 rounded-md" // Added padding and background\
         initial={{ opacity: 0, y: 20 }} // Initial state: invisible and slightly down\
         animate={{ opacity: 1, y: 0 }} // Animate to visible and normal position\

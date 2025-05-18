@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { CheckCircle, Sparkles, Users, Video, ListChecks, Repeat, LifeBuoy, DollarSign, Zap, Gem, ShieldCheck, Star, ClipboardList, Salad, Apple } from "lucide-react"; // Added ClipboardList, Salad, Apple
 import Link from "next/link";
 
+import React from 'react'; // Import React to use React.Fragment
 interface Feature {
   text: string;
   icon: React.ElementType;
@@ -131,7 +132,9 @@ export default function PricingPage() {
                 variant={plan.variant}
                 size="lg"
               >
- <Link href={plan.link || "#"}>{plan.cta}</Link>
+                <React.Fragment>
+                  <Link href={plan.link || "#"}>{plan.cta}</Link>
+                </React.Fragment>
               </Button>
             </CardFooter>
             </div>

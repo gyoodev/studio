@@ -125,9 +125,9 @@ export default function PricingPage() {
                     <span className="text-sm">{feature.text}</span>
                   </li>
                 ))}\
-              </ul>\
- </CardContent>\
- <CardFooter className="mt-auto pt-6 pb-6 border-t bg-muted/30">
+              </ul>
+            </CardContent>
+            <CardFooter className="mt-auto pt-6 pb-6 border-t bg-muted/30">
               <Button
                 asChild
                 className="w-full shadow-md hover:shadow-lg transition-shadow"
@@ -139,16 +139,16 @@ export default function PricingPage() {
             </CardFooter>
             </motion.div>
           </Card>)}
-      </section>\
-      <footer // Wrap footer with motion\
-        className="mt-16 text-center text-muted-foreground text-sm p-4 md:p-6 bg-muted/30 rounded-md" // Added padding and background\
+      </section>
+      <footer // Wrap footer with motion
+        className="mt-16 text-center text-muted-foreground text-sm p-4 md:p-6 bg-muted/30 rounded-md" // Added padding and background
         initial={{ opacity: 0, y: 20 }} // Initial state: invisible and slightly down
         animate={{ opacity: 1, y: 0 }} // Animate to visible and normal position
         transition={{ duration: 0.8, delay: plans.length * 0.1 + 0.2 }} // Delay after cards
-      >\
+      >
         <p>All prices are in USD. Subscriptions can be managed or cancelled at any time from your profile.</p>
         <p>Have questions? <Link href="/contact" className="text-primary hover:underline">Contact Support</Link>.</p>
       </footer>
-    </motion.div> // Close the main motion.div\
+    </motion.div> // Close the main motion.div
  );
 }\

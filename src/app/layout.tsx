@@ -1,4 +1,3 @@
-"use client";
 import type {Metadata} from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { appWithTranslation } from 'next-i18next'; // Updated import path

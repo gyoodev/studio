@@ -2,10 +2,6 @@ import type {Metadata} from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { AppLayout } from '@/components/layout/AppLayout';
-import { AuthProvider } from '@/context/AuthContext'; // Import AuthProvider
-import { motion } from 'framer-motion'; // Import motion
-
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -29,20 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AuthProvider> {/* Wrap with AuthProvider */}
-          <AppLayout>
-            {/* Add motion.div for fade-in animation */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              className="w-full h-full" // Ensure it takes up space
-            >
-              {children}
-            </motion.div>
-          </AppLayout>
-          <Toaster />
-        </AuthProvider>
+        {children}
       </body>
     </html>
   );

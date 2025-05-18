@@ -121,7 +121,7 @@ export default function PricingPage() {
                     <feature.icon className="h-5 w-5 text-accent mr-3 mt-0.5 flex-shrink-0" />
                     <span className="text-sm">{feature.text}</span>
                   </li>
-                ))}\
+                ))}
               </ul>
             </CardContent>
             <CardFooter className="mt-auto pt-6 pb-6 border-t bg-muted/30">
@@ -133,7 +133,7 @@ export default function PricingPage() {
               >
  <Link href={plan.link || "#"}>{plan.cta}</Link>
               </Button>
-            </CardFooter>\
+            </CardFooter>
             </div>
           </Card>
         ))}

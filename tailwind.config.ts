@@ -111,19 +111,18 @@ export default {
     animation: {
       "accordion-down": "accordion-down 0.2s ease-out",
       "accordion-up": "accordion-up 0.2s ease-out",
+
     },
-    // Basic structure for dark mode (can be expanded later)
-    darkMode: 'class',
-    colors: {
-      ...colors, // Inherit default colors
+    colors: ({ theme }) => ({ // Access theme here
+      ...theme('colors'), // Spread default colors
       dark: {
         background: "#1A1A1A",
         foreground: "#E5E7EB", // Lighter foreground for better contrast
         border: '#374151',
         input: '#1F2937',
         ring: '#6B7280',
-      }
-    },
+      },
+    }),
     fontFamily: {
       sans: ['Inter', 'sans-serif'], // Use Inter as the primary sans-serif font
     },

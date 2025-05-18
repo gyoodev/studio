@@ -1,3 +1,6 @@
+
+"use client";
+
 import React from 'react';
 import dynamic from 'next/dynamic';
 const AdminRoute = dynamic(() => import("@/components/auth/AdminRoute"), { ssr: false });

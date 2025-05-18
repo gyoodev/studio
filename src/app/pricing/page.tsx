@@ -122,7 +122,7 @@ export default function PricingPage() {
                     <span className="text-sm">{feature.text}</span>
                   </li>
                 ))}\
-              </ul>\
+              </ul>
             </CardContent>
             <CardFooter className="mt-auto pt-6 pb-6 border-t bg-muted/30">
               <Button
@@ -134,7 +134,7 @@ export default function PricingPage() {
  <Link href={plan.link || "#"}>{plan.cta}</Link>
               </Button>
             </CardFooter>\
-            </div>\
+            </div>
           </Card>
         ))}
       </section>
